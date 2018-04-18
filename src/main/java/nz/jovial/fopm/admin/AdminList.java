@@ -22,7 +22,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.Getter;
-import nz.jovial.fopm.rank.Rank;
+import nz.jovial.fopm.Rank;
 import nz.jovial.fopm.util.FLog;
 import nz.jovial.fopm.util.SQLHandler;
 import org.bukkit.entity.Player;
@@ -32,12 +32,14 @@ public class AdminList
 
     @Getter
     private static List<Admin> admins;
-    private static List<String> imposters;
+    @Getter
+    public static List<String> imposters;
 
     public AdminList()
     {
         admins = new ArrayList<>();
         imposters = new ArrayList<>();
+        loadAdmins();
     }
 
     public static void loadAdmins()
@@ -48,7 +50,7 @@ public class AdminList
 
         try
         {
-            ResultSet result = c.prepareStatement("SELECT name FROM admins;").executeQuery();
+            ResultSet result = c.prepareStatement("SELECT name FROM admins").executeQuery();
             if (result.next())
             {
                 names.add(result.getString(1));
@@ -66,7 +68,7 @@ public class AdminList
 
             try
             {
-                PreparedStatement statement = c.prepareStatement("SELECT * FROM admins WHERE name = ?;");
+                PreparedStatement statement = c.prepareStatement("SELECT * FROM admins WHERE name = ?");
                 statement.setString(1, name);
                 ResultSet result = statement.executeQuery();
                 if (result.next())
@@ -96,6 +98,57 @@ public class AdminList
 
         admins.add(admin);
         admin.save();
+    }
+
+    public static void addAdmin(Player player)
+    {
+        if (isAdmin(player))
+        {
+            return;
+        }
+
+        Admin admin = new Admin();
+        admin.setName(player.getName());
+        admin.setIp(player.getAddress().getHostString());
+        admin.setRank(Rank.SWING_MANAGER);
+        admin.setActive(true);
+        addAdmin(admin);
+    }
+
+    public static void updateRank(Player player, Rank rank)
+    {
+        if (!isAdmin(player))
+        {
+            return;
+        }
+
+        Admin admin = getAdmin(player);
+        admin.setRank(rank);
+        admin.update();
+    }
+
+    public static void updateIp(Player player)
+    {
+        if (!isAdmin(player))
+        {
+            return;
+        }
+
+        Admin admin = getAdmin(player);
+        admin.setIp(player.getAddress().getHostString());
+        admin.update();
+    }
+
+    public static void updateActive(Player player, boolean active)
+    {
+        if (isAdmin(player))
+        {
+            return;
+        }
+
+        Admin admin = getAdmin(player);
+        admin.setActive(active);
+        admin.update();
     }
 
     public static void removeAdmin(Admin admin)

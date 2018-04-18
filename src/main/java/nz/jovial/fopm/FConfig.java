@@ -17,78 +17,64 @@ package nz.jovial.fopm;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import nz.jovial.fopm.util.FLog;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+/**
+ *
+ * @author Adopted Kid
+ */
 public class FConfig
 {
 
-    private final FreedomOpMod plugin;
-    private final String name;
-    private final File configFile;
-    private FileConfiguration fileConfiguration;
-    private File dataFolder;
+    private final String fileName;
+    private File configFile;
 
-    public FConfig(FreedomOpMod plugin, String name)
+    public FConfig(String fileName)
     {
-        if (plugin == null)
-        {
-            throw new IllegalArgumentException("plugin cannot be null");
-        }
-
-        this.plugin = plugin;
-        this.name = name;
-        this.dataFolder = plugin.getDataFolder();
+        this.fileName = fileName;
+        File dataFolder = FreedomOpMod.plugin.getDataFolder();
 
         if (dataFolder == null)
         {
             throw new IllegalStateException();
         }
 
-        this.configFile = new File(dataFolder, name);
+        this.configFile = new File(dataFolder, fileName);
     }
 
-    public void load()
+    public YamlConfiguration getConfig()
     {
-        fileConfiguration = YamlConfiguration.loadConfiguration(configFile);
-
-        InputStream in = plugin.getResource(name);
-        if (in != null)
-        {
-            InputStreamReader reader = new InputStreamReader(in);
-            YamlConfiguration yaml = YamlConfiguration.loadConfiguration(reader);
-            fileConfiguration.setDefaults(yaml);
-        }
+        return YamlConfiguration.loadConfiguration(configFile);
     }
 
-    public void save()
+    public void loadConfig()
     {
-        if (fileConfiguration == null || configFile == null)
-        {
-            return;
-        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(configFile);
 
         try
         {
-            plugin.getConfig().save(configFile);
+            yaml.options().copyDefaults();
+            yaml.save(configFile);
         }
         catch (IOException ex)
         {
-            FLog.severe("Could not save config to " + configFile.getName());
             FLog.severe(ex);
         }
     }
 
-    public FileConfiguration getConfig()
+    public void saveConfig()
     {
-        if (fileConfiguration == null)
-        {
-            load();
-        }
+        YamlConfiguration yaml = YamlConfiguration.loadConfiguration(configFile);
 
-        return fileConfiguration;
+        try
+        {
+            yaml.save(configFile);
+        }
+        catch (IOException ex)
+        {
+            FLog.severe(ex);
+        }
     }
 }

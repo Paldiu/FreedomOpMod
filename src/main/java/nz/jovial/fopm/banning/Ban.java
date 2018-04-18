@@ -49,10 +49,10 @@ public class Ban
     {
         return ChatColor.RED
                 + "You're currently banned from this server.\n"
-                + "Reason: " + ChatColor.YELLOW + reason + "\n"
-                + ChatColor.RED + "By: " + ChatColor.YELLOW + by + "\n"
-                + ChatColor.RED + "Your ban will expire on "
-                + ChatColor.YELLOW + FUtil.dateToString(expiry);
+                + "Reason: " + ChatColor.YELLOW + reason != null ? reason : "N/A" + "\n"
+                        + ChatColor.RED + "By: " + ChatColor.YELLOW + by + "\n"
+                        + ChatColor.RED + "Your ban will expire on "
+                        + ChatColor.YELLOW + FUtil.dateToString(expiry);
     }
 
     public boolean isExpired()
@@ -70,7 +70,7 @@ public class Ban
         Connection c = SQLHandler.getConnection();
         try
         {
-            PreparedStatement statement = c.prepareStatement("INSERT INTO bans(name, ip, by, reason, expiry) VALUES (?, ?, ?, ?, ?);");
+            PreparedStatement statement = c.prepareStatement("INSERT INTO bans (name, ip, by, reason, expiry) VALUES (?, ?, ?, ?, ?)");
             statement.setString(1, name);
             statement.setString(2, ip);
             statement.setString(3, by);
@@ -89,7 +89,7 @@ public class Ban
         Connection c = SQLHandler.getConnection();
         try
         {
-            PreparedStatement statement = c.prepareStatement("DELETE FROM bans WHERE name = ?;");
+            PreparedStatement statement = c.prepareStatement("DELETE FROM bans WHERE name = ?");
             statement.setString(1, name);
             statement.executeUpdate();
         }

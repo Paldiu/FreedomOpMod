@@ -1,0 +1,52 @@
+#
+# FreedomOpMod Main Configuration
+#
+
+general:
+  # Name of your server?
+  name: FreedomOp
+    
+  # MOTD - Color codes (&) and 2 lines (||) are supported // Random chat colors are also avaliable (&-)
+  motd: '&-Welcome &-to &-FreedomOp! &-Enjoy &-your &-stay'
+    
+  # Website URL - Useful to link to forum for ban appeals, policy, admin applications etc.
+  website_url: http://freedomop.boards.net/
+    
+  # Who's the server's CEO (Chief Executive Officer)
+  ceo: Paldiu
+  
+  # Who's the server's COO (Chief Operations Officer)
+  coo: Wade_Smith
+  
+  # Who's the server's CDO (Chief Development Officer)
+  cdo: Go4lie
+  
+  # Who's the server's CFO (Chief Forums Officer)
+  cfo: EnderLolzeh
+  
+  # Who's the server's CAO (Chief Administration Officer)
+  cao: _flippy
+  
+commands:
+  default:
+    - '/gamemode'
+    - '/time'
+    - '/ban-ip'
+    - '/pardon-ip'
+    - '/pardon'
+    - '/save-on'
+    - '/save-off'
+    - '/nuke'
+    - '/summon'
+    - '/setblock'
+    - '/fill'
+    - '/tellraw'
+    
+  admins:
+    - '/coreprotect'
+    - '/stop'
+    - '/restart'
+    - '/save-all'
+    - '/reload'
+    - '/socialspy'
+    - '/gamerule'

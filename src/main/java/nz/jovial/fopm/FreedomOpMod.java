@@ -15,8 +15,11 @@
  */
 package nz.jovial.fopm;
 
+import java.sql.SQLException;
 import nz.jovial.fopm.admin.AdminList;
 import nz.jovial.fopm.banning.BanManager;
+import nz.jovial.fopm.command.CommandLoader;
+import nz.jovial.fopm.listener.PlayerListener;
 import nz.jovial.fopm.util.FLog;
 import nz.jovial.fopm.util.SQLHandler;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -25,14 +28,18 @@ public class FreedomOpMod extends JavaPlugin
 {
 
     public static FreedomOpMod plugin;
+    public FConfig config;
+    public CommandLoader cl;
     public SQLHandler sqlh;
     public AdminList al;
     public BanManager bm;
+    public PlayerListener pl;
 
     @Override
     public void onLoad()
     {
         FreedomOpMod.plugin = this;
+        config = new FConfig("config.yml");
     }
 
     @Override
@@ -40,11 +47,12 @@ public class FreedomOpMod extends JavaPlugin
     {
         FreedomOpMod.plugin = this;
 
+        config.loadConfig();
+        cl = new CommandLoader();
         sqlh = new SQLHandler(plugin);
         al = new AdminList();
-        AdminList.loadAdmins();
         bm = new BanManager();
-        BanManager.loadBans();
+        pl = new PlayerListener(plugin);
 
         FLog.info("The plugin has been enabled!");
     }
@@ -53,6 +61,17 @@ public class FreedomOpMod extends JavaPlugin
     public void onDisable()
     {
         FreedomOpMod.plugin = null;
+
+        config.saveConfig();
+        try
+        {
+            SQLHandler.getConnection().close();
+        }
+        catch (SQLException ex)
+        {
+            FLog.severe(ex);
+        }
+
         FLog.info("The plugin has been disabled!");
     }
 }

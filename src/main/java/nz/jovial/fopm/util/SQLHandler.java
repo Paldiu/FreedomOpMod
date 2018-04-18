@@ -18,9 +18,12 @@ package nz.jovial.fopm.util;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import lombok.Getter;
 import nz.jovial.fopm.FreedomOpMod;
+import org.bukkit.entity.Player;
 
 public class SQLHandler
 {
@@ -51,6 +54,7 @@ public class SQLHandler
                 connection = DriverManager.getConnection(url);
                 if (connection != null)
                 {
+                    generateTables();
                     FLog.info("Loaded existing database file.");
                 }
             }
@@ -61,22 +65,87 @@ public class SQLHandler
         }
     }
 
+    public static boolean playerExists(Player player)
+    {
+        Connection c = getConnection();
+        try
+        {
+            PreparedStatement statement = c.prepareStatement("SELECT * FROM players WHERE name = ?");
+            statement.setString(1, player.getName());
+            ResultSet result = statement.executeQuery();
+
+            if (result.next())
+            {
+                return result.getString("name") != null;
+            }
+        }
+        catch (SQLException ex)
+        {
+            FLog.severe(ex);
+        }
+
+        return false;
+    }
+
+    public static void generateNewPlayer(Player player)
+    {
+        Connection c = getConnection();
+        try
+        {
+            PreparedStatement statement = c.prepareStatement("INSERT INTO players (name, ip) VALUES (?, ?)");
+            statement.setString(1, player.getName());
+            statement.setString(2, player.getAddress().getHostString());
+            statement.executeUpdate();
+        }
+        catch (SQLException ex)
+        {
+            FLog.severe(ex);
+        }
+    }
+
+    public static void updatePlayer(Player player)
+    {
+        Connection c = getConnection();
+        try
+        {
+            PreparedStatement statement = c.prepareStatement("UPDATE players SET ip = ? WHERE name = ?");
+            statement.setString(1, player.getAddress().getHostString());
+            statement.setString(2, player.getName());
+            statement.executeUpdate();
+        }
+        catch (SQLException ex)
+        {
+            FLog.severe(ex);
+        }
+    }
+
     public static void generateTables() throws SQLException
     {
         Connection c = getConnection();
-        String admins = "CREATE TABLE IF NOT EXISTS admins("
+        String admins = "CREATE TABLE IF NOT EXISTS admins ("
                 + "name TEXT PRIMARY KEY,"
                 + "ip VARCHAR(64) NOT NULL,"
+                + "rank VARCHAR(64) NOT NULL,"
                 + "active BOOLEAN NOT NULL"
-                + ");";
-        String bans = "CREATE TABLE IF NOT EXISTS bans("
+                + ")";
+        String players = "CREATE TABLE IF NOT EXISTS players ("
+                + "name TEXT PRIMARY KEY,"
+                + "ip VARCHAR(64) NOT NULL"
+                + ")";
+        String bans = "CREATE TABLE IF NOT EXISTS bans ("
                 + "name TEXT PRIMARY KEY,"
                 + "ip VARCHAR(64),"
                 + "by TEXT NOT NULL,"
                 + "reason TEXT,"
                 + "expiry LONG NOT NULL"
-                + ");";
+                + ")";
+        String permbans = "CREATE TABLE IF NOT EXISTS permbans ("
+                + "name TEXT PRIMARY KEY NOT NULL,"
+                + "ip VARCHAR(64) NOT NULL"
+                + ")";
         c.prepareStatement(admins).executeUpdate();
+        c.prepareStatement(players).executeUpdate();
         c.prepareStatement(bans).executeUpdate();
+        c.prepareStatement(permbans).executeUpdate();
     }
 }

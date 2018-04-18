@@ -20,20 +20,25 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import lombok.Getter;
 import nz.jovial.fopm.util.FLog;
 import nz.jovial.fopm.util.FUtil;
 import nz.jovial.fopm.util.SQLHandler;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class BanManager
 {
 
+    @Getter
     private static List<Ban> bans;
 
     public BanManager()
     {
         bans = new ArrayList<>();
+        loadBans();
     }
 
     public static void loadBans()
@@ -44,7 +49,7 @@ public class BanManager
 
         try
         {
-            ResultSet result = c.prepareStatement("SELECT name FROM bans;").executeQuery();
+            ResultSet result = c.prepareStatement("SELECT name FROM bans").executeQuery();
             if (result.next())
             {
                 names.add(result.getString(1));
@@ -62,7 +67,7 @@ public class BanManager
 
             try
             {
-                PreparedStatement statement = c.prepareStatement("SELECT * FROM bans WHERE name = ?;");
+                PreparedStatement statement = c.prepareStatement("SELECT * FROM bans WHERE name = ?");
                 statement.setString(1, name);
                 ResultSet result = statement.executeQuery();
                 if (result.next())
@@ -109,6 +114,22 @@ public class BanManager
 
         bans.add(ban);
         ban.save();
+    }
+
+    public static void addBan(CommandSender sender, Player player, String reason, Date date)
+    {
+        if (isBanned(player))
+        {
+            return;
+        }
+
+        Ban ban = new Ban();
+        ban.setName(player.getName());
+        ban.setIp(player.getAddress().getHostString());
+        ban.setBy(sender.getName());
+        ban.setReason(reason);
+        ban.setExpiry(date);
+        addBan(ban);
     }
 
     public static void removeBan(Ban ban)
