@@ -16,14 +16,14 @@
 package nz.jovial.fopm.command;
 
 import nz.jovial.fopm.admin.AdminList;
-import nz.jovial.fopm.Rank;
+import nz.jovial.fopm.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandParameters(description = "Manage an admin", usage = "/<command> <add <player> | delete <player> | setrank <player> <rank> | info <player>", source = SourceType.BOTH, rank = Rank.SWING_MANAGER)
+@CommandParameters(description = "Manage an admin", usage = "/<command> <add <player> | remove <player> | setrank <player> <rank> | info <player>", source = SourceType.BOTH, rank = Rank.SWING_MANAGER)
 public class Command_admin
 {
 
@@ -42,7 +42,13 @@ public class Command_admin
                 {
                     if (!Rank.getRank(sender).isAtLeast(Rank.GENERAL_MANAGER))
                     {
-                        sender.sendMessage(ChatColor.RED + "You must be at least General Manager to execute this command!");
+                        sender.sendMessage(ChatColor.RED + "You must be at least General Manager to be able to execute this command!");
+                        return true;
+                    }
+
+                    if (sender instanceof Player)
+                    {
+                        sender.sendMessage(ChatColor.RED + "You must be on console to be able to execute this command!");
                         return true;
                     }
 
@@ -76,7 +82,13 @@ public class Command_admin
                 {
                     if (!Rank.getRank(sender).isAtLeast(Rank.GENERAL_MANAGER))
                     {
-                        sender.sendMessage(ChatColor.RED + "You must be at least General Manager to execute this command!");
+                        sender.sendMessage(ChatColor.RED + "You must be at least General Manager to be able to execute this command!");
+                        return true;
+                    }
+
+                    if (sender instanceof Player)
+                    {
+                        sender.sendMessage(ChatColor.RED + "You must be on console to be able to execute this command!");
                         return true;
                     }
 
@@ -127,6 +139,12 @@ public class Command_admin
                         return true;
                     }
 
+                    if (sender instanceof Player)
+                    {
+                        sender.sendMessage(ChatColor.RED + "You must be on console to be able to execute this command!");
+                        return true;
+                    }
+
                     Player player = Bukkit.getPlayer(args[1]);
                     if (player == null)
                     {
@@ -149,7 +167,7 @@ public class Command_admin
 
                     if (!rank.isAtLeast(Rank.SWING_MANAGER))
                     {
-                        sender.sendMessage(ChatColor.RED + "Must be at least Swing Manager!");
+                        sender.sendMessage(ChatColor.RED + "The rank must be at least Swing Manager!");
                         return true;
                     }
 

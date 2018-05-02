@@ -49,7 +49,7 @@ public class FUtil
     public static String colorize(String string)
     {
         string = ChatColor.translateAlternateColorCodes('&', string);
-        string = string.replaceAll("&-", CHAT_COLOR_POOL.get(RANDOM.nextInt(CHAT_COLOR_POOL.size())).toString());
+        string = string.replace("&-", CHAT_COLOR_POOL.get(RANDOM.nextInt(CHAT_COLOR_POOL.size())).toString());
         return string;
     }
 

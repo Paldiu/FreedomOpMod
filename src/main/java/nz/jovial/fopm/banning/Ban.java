@@ -49,10 +49,10 @@ public class Ban
     {
         return ChatColor.RED
                 + "You're currently banned from this server.\n"
-                + "Reason: " + ChatColor.YELLOW + reason != null ? reason : "N/A" + "\n"
-                        + ChatColor.RED + "By: " + ChatColor.YELLOW + by + "\n"
-                        + ChatColor.RED + "Your ban will expire on "
-                        + ChatColor.YELLOW + FUtil.dateToString(expiry);
+                + "Reason: " + ChatColor.YELLOW + (reason != null ? reason : "N/A") + "\n"
+                + ChatColor.RED + "By: " + ChatColor.YELLOW + by + "\n"
+                + ChatColor.RED + "Your ban will expire on "
+                + ChatColor.YELLOW + FUtil.dateToString(expiry);
     }
 
     public boolean isExpired()

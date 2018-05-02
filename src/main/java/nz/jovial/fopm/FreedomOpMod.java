@@ -20,8 +20,11 @@ import nz.jovial.fopm.admin.AdminList;
 import nz.jovial.fopm.banning.BanManager;
 import nz.jovial.fopm.command.CommandLoader;
 import nz.jovial.fopm.listener.PlayerListener;
+import nz.jovial.fopm.listener.ServerListener;
+import nz.jovial.fopm.listener.WorldEditListener;
 import nz.jovial.fopm.util.FLog;
 import nz.jovial.fopm.util.SQLHandler;
+import nz.jovial.fopm.world.WorldManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class FreedomOpMod extends JavaPlugin
@@ -34,6 +37,9 @@ public class FreedomOpMod extends JavaPlugin
     public AdminList al;
     public BanManager bm;
     public PlayerListener pl;
+    public ServerListener sl;
+    public WorldEditListener wel;
+    public WorldManager wm;
 
     @Override
     public void onLoad()
@@ -53,6 +59,10 @@ public class FreedomOpMod extends JavaPlugin
         al = new AdminList();
         bm = new BanManager();
         pl = new PlayerListener(plugin);
+        sl = new ServerListener(plugin);
+        wel = new WorldEditListener(plugin);
+        wm = new WorldManager();
+        wm.loadWorlds();
 
         FLog.info("The plugin has been enabled!");
     }
@@ -62,6 +72,7 @@ public class FreedomOpMod extends JavaPlugin
     {
         FreedomOpMod.plugin = null;
 
+        wm.saveWorlds();
         config.saveConfig();
         try
         {

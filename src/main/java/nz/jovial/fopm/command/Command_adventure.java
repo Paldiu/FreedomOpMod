@@ -15,37 +15,22 @@
  */
 package nz.jovial.fopm.command;
 
-import nz.jovial.fopm.PlayerData;
 import nz.jovial.fopm.rank.Rank;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandParameters(description = "Mutes a player", usage = "/<command> <player>", aliases = "stfu", source = SourceType.BOTH, rank = Rank.SWING_MANAGER)
-public class Command_mute
+@CommandParameters(description = "Set your gamemode to adventure", aliases = "gma", source = SourceType.IN_GAME, rank = Rank.OP)
+public class Command_adventure
 {
 
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args)
     {
-        if (args.length != 1)
-        {
-            return false;
-        }
-
-        Player player = Bukkit.getPlayer(args[0]);
-        if (player == null)
-        {
-            sender.sendMessage(ChatColor.RED + "Cannot find that player.");
-            return true;
-        }
-
-        PlayerData data = PlayerData.getPlayerData(player);
-
-        Bukkit.broadcastMessage(ChatColor.GREEN + sender.getName() + " - " + (data.isMuted() ? "Unmuting " : "Muting ") + player.getName());
-        player.sendMessage(ChatColor.GRAY + "You have been " + (data.isFrozen() ? "unmuted" : "muted"));
-        data.setMuted(!data.isMuted());
+        Player player = (Player) sender;
+        player.setGameMode(GameMode.ADVENTURE);
+        sender.sendMessage(ChatColor.GOLD + "Your gamemode have been set to adventure!");
         return true;
     }
 }

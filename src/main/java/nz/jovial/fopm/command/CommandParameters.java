@@ -17,7 +17,7 @@ package nz.jovial.fopm.command;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import nz.jovial.fopm.Rank;
+import nz.jovial.fopm.rank.Rank;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface CommandParameters

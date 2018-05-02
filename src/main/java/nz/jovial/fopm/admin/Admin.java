@@ -20,7 +20,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import lombok.Getter;
 import lombok.Setter;
-import nz.jovial.fopm.Rank;
+import nz.jovial.fopm.rank.Rank;
 import nz.jovial.fopm.util.FLog;
 import nz.jovial.fopm.util.SQLHandler;
 

@@ -132,6 +132,22 @@ public class BanManager
         addBan(ban);
     }
 
+    public static void addBan(CommandSender sender, String name, String ip, String reason, Date date)
+    {
+        if (getBan(name) != null)
+        {
+            return;
+        }
+
+        Ban ban = new Ban();
+        ban.setName(name);
+        ban.setIp(ip);
+        ban.setBy(sender.getName());
+        ban.setReason(reason);
+        ban.setExpiry(date);
+        addBan(ban);
+    }
+
     public static void removeBan(Ban ban)
     {
         if (!isBanned(ban))
@@ -156,6 +172,19 @@ public class BanManager
     public static boolean isBanned(Player player)
     {
         return getBan(player) != null;
+    }
+
+    public static Ban getBan(String name)
+    {
+        for (Ban ban : bans)
+        {
+            if (ban.getName().equalsIgnoreCase(name))
+            {
+                return ban;
+            }
+        }
+
+        return null;
     }
 
     public static Ban getBan(Player player)

@@ -33,13 +33,13 @@ public enum Rank
     CONSOLE("the", "Console", "CONSOLE", ChatColor.DARK_GREEN);
 
     @Getter
-    private String determiner;
+    private final String determiner;
     @Getter
-    private String name;
+    private final String name;
     @Getter
-    private String tag;
+    private final String tag;
     @Getter
-    private ChatColor color;
+    private final ChatColor color;
 
     private Rank(String determiner, String name, String tag, ChatColor color)
     {
@@ -59,6 +59,11 @@ public enum Rank
         return getLevel() >= rank.getLevel();
     }
 
+    public String getLoginMessage()
+    {
+        return ChatColor.YELLOW + " is " + getDeterminer() + " " + getColor() + getName();
+    }
+
     public static Rank stringToRank(String name)
     {
         try
@@ -68,7 +73,7 @@ public enum Rank
         catch (Exception ex)
         {
         }
-        return Rank.NON_OP;
+        return null;
     }
 
     public static Rank getRank(Player player)

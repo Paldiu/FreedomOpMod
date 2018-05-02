@@ -19,7 +19,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import nz.jovial.fopm.FreedomOpMod;
-import nz.jovial.fopm.Rank;
+import nz.jovial.fopm.rank.Rank;
 import nz.jovial.fopm.util.FLog;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

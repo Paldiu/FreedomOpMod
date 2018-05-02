@@ -17,7 +17,7 @@ package nz.jovial.fopm.command;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
-import nz.jovial.fopm.Rank;
+import nz.jovial.fopm.rank.Rank;
 import nz.jovial.fopm.util.FLog;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;

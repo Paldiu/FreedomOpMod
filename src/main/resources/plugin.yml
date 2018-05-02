@@ -3,3 +3,5 @@ version: ${project.version}
 description: A main core plugin for FreedomOpMod
 main: nz.jovial.fopm.FreedomOpMod
 authors: [Focusvity, Paldiu]
+depend: [WorldEdit]
+softdepend: [CoreProtect, WorldGuard]

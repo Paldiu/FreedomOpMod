@@ -18,13 +18,8 @@ package nz.jovial.fopm;
 import java.io.File;
 import java.io.IOException;
 import nz.jovial.fopm.util.FLog;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-/**
- *
- * @author Adopted Kid
- */
 public class FConfig
 {
 

@@ -19,7 +19,7 @@ import java.lang.reflect.Field;
 import nz.jovial.fopm.FreedomOpMod;
 import nz.jovial.fopm.PlayerData;
 import nz.jovial.fopm.admin.AdminList;
-import nz.jovial.fopm.Rank;
+import nz.jovial.fopm.rank.Rank;
 import nz.jovial.fopm.banning.Ban;
 import nz.jovial.fopm.banning.BanManager;
 import nz.jovial.fopm.util.FLog;
@@ -39,6 +39,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 public class PlayerListener implements Listener
 {
@@ -95,8 +96,7 @@ public class PlayerListener implements Listener
 
         if (BanManager.isBanned(player) && !ban.isExpired())
         {
-            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ChatColor.RED + "You have been banned for: " + ChatColor.YELLOW + ban.getReason()
-                    + ChatColor.RED + "\nExpires on: " + ChatColor.YELLOW + FUtil.dateToString(ban.getExpiry()));
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ban.getKickMessage());
         }
     }
 
@@ -112,17 +112,50 @@ public class PlayerListener implements Listener
             return;
         }
 
-        event.setFormat((data.getTag() != null ? data.getTag() + ChatColor.WHITE + " <" : ChatColor.WHITE + "<") + event.getPlayer().getName() + ChatColor.WHITE + "> " + event.getMessage());
+        event.setFormat((data.getTag() != null ? FUtil.colorize(data.getTag()) + ChatColor.WHITE + " <" : ChatColor.WHITE + "<") + event.getPlayer().getDisplayName() + ChatColor.WHITE + "> " + event.getMessage());
     }
 
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent event)
     {
-        PlayerData data = PlayerData.getPlayerData(event.getPlayer());
+        Player player = event.getPlayer();
+        PlayerData data = PlayerData.getPlayerData(player);
         if (data.isFrozen())
         {
             event.getPlayer().teleport(event.getFrom());
             event.setCancelled(true);
+        }
+
+        if (player.getWorld() == plugin.wm.aw.getWorld() && !Rank.getRank(player).isAtLeast(plugin.wm.aw.getRank()))
+        {
+            player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "You must be at least " + plugin.wm.aw.getRank().getName() + " to be able to stay in the world!");
+        }
+
+        if (player.getWorld() == plugin.wm.fl.getWorld() && !Rank.getRank(player).isAtLeast(plugin.wm.fl.getRank()))
+        {
+            player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "You must be at least " + plugin.wm.fl.getRank().getName() + " to be able to stay in the world!");
+        }
+    }
+
+    @EventHandler
+    public void onPlayerTeleport(PlayerTeleportEvent event)
+    {
+        Player player = event.getPlayer();
+
+        if (event.getTo().getWorld() == plugin.wm.aw.getWorld() && !Rank.getRank(player).isAtLeast(plugin.wm.aw.getRank()))
+        {
+            event.setCancelled(true); // Cancel teleport
+            player.sendMessage(ChatColor.RED + "You must be at least " + plugin.wm.aw.getRank().getName() + " to be able to teleport to adminworld!");
+        }
+
+        if (event.getTo().getWorld() == plugin.wm.fl.getWorld() && !Rank.getRank(player).isAtLeast(plugin.wm.fl.getRank()))
+        {
+            event.setCancelled(true); // Cancel teleport
+            player.sendMessage(ChatColor.RED + "You must be at least " + plugin.wm.aw.getRank().getName() + " to be able to teleport to flatlands!");
         }
     }
 

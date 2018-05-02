@@ -15,7 +15,7 @@
  */
 package nz.jovial.fopm.command;
 
-import nz.jovial.fopm.Rank;
+import nz.jovial.fopm.rank.Rank;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

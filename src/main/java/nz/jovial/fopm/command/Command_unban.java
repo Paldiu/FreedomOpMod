@@ -15,7 +15,7 @@
  */
 package nz.jovial.fopm.command;
 
-import nz.jovial.fopm.Rank;
+import nz.jovial.fopm.rank.Rank;
 import nz.jovial.fopm.banning.Ban;
 import nz.jovial.fopm.banning.BanManager;
 import org.bukkit.Bukkit;

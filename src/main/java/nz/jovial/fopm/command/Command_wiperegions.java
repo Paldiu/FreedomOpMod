@@ -15,37 +15,41 @@
  */
 package nz.jovial.fopm.command;
 
-import nz.jovial.fopm.PlayerData;
+import nz.jovial.fopm.bridge.WorldGuardBridge;
 import nz.jovial.fopm.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
-@CommandParameters(description = "Mutes a player", usage = "/<command> <player>", aliases = "stfu", source = SourceType.BOTH, rank = Rank.SWING_MANAGER)
-public class Command_mute
+@CommandParameters(description = "Wipe every region in a specific world", usage = "/<command> <world>", source = SourceType.BOTH, rank = Rank.SYSTEM_MANAGER)
+public class Command_wiperegions
 {
 
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args)
     {
+        if (WorldGuardBridge.getWorldGuard() == null)
+        {
+            sender.sendMessage(ChatColor.RED + "Can not find WorldGuard plugin!");
+            return true;
+        }
+
         if (args.length != 1)
         {
             return false;
         }
 
-        Player player = Bukkit.getPlayer(args[0]);
-        if (player == null)
+        World world = Bukkit.getWorld(args[0]);
+
+        if (world == null)
         {
-            sender.sendMessage(ChatColor.RED + "Cannot find that player.");
+            sender.sendMessage(ChatColor.RED + "That world can not be found!");
             return true;
         }
 
-        PlayerData data = PlayerData.getPlayerData(player);
-
-        Bukkit.broadcastMessage(ChatColor.GREEN + sender.getName() + " - " + (data.isMuted() ? "Unmuting " : "Muting ") + player.getName());
-        player.sendMessage(ChatColor.GRAY + "You have been " + (data.isFrozen() ? "unmuted" : "muted"));
-        data.setMuted(!data.isMuted());
+        Bukkit.broadcastMessage(ChatColor.RED + sender.getName() + " - Wiping regions for world: " + world.getName());
+        sender.sendMessage(ChatColor.GRAY + "Wiped " + WorldGuardBridge.wipeRegions(world) + " region(s)");
         return true;
     }
 }

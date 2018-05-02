@@ -17,35 +17,38 @@ package nz.jovial.fopm.command;
 
 import nz.jovial.fopm.PlayerData;
 import nz.jovial.fopm.rank.Rank;
-import org.bukkit.Bukkit;
+import nz.jovial.fopm.util.FUtil;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandParameters(description = "Mutes a player", usage = "/<command> <player>", aliases = "stfu", source = SourceType.BOTH, rank = Rank.SWING_MANAGER)
-public class Command_mute
+@CommandParameters(description = "Set your own tag", usage = "/<command> <off | set <argument>>", source = SourceType.IN_GAME, rank = Rank.OP)
+public class Command_tag
 {
 
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args)
     {
-        if (args.length != 1)
+        if (args.length > 1)
         {
-            return false;
+            if (args[0].equalsIgnoreCase("set"))
+            {
+                String tag = StringUtils.join(args, " ", 1, args.length);
+                PlayerData.getPlayerData((Player) sender).setTag(tag);
+                sender.sendMessage(ChatColor.GRAY + "Tag set to " + FUtil.colorize(tag));
+                return true;
+            }
         }
-
-        Player player = Bukkit.getPlayer(args[0]);
-        if (player == null)
+        else if (args.length == 1)
         {
-            sender.sendMessage(ChatColor.RED + "Cannot find that player.");
-            return true;
+            if (args[0].equalsIgnoreCase("off"))
+            {
+                PlayerData.getPlayerData((Player) sender).setTag(null);
+                sender.sendMessage(ChatColor.GRAY + "Tag removed");
+                return true;
+            }
         }
-
-        PlayerData data = PlayerData.getPlayerData(player);
-
-        Bukkit.broadcastMessage(ChatColor.GREEN + sender.getName() + " - " + (data.isMuted() ? "Unmuting " : "Muting ") + player.getName());
-        player.sendMessage(ChatColor.GRAY + "You have been " + (data.isFrozen() ? "unmuted" : "muted"));
-        data.setMuted(!data.isMuted());
-        return true;
+        return false;
     }
 }

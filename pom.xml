@@ -17,6 +17,10 @@
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
+        <repository>
+            <id>focusvity-repo</id>
+            <url>https://focusvity.github.io/repo/maven/</url>
+        </repository>
     </repositories>
     
     <dependencies>
@@ -29,6 +33,21 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.16.18</version>
+        </dependency>
+        <dependency>
+            <groupId>net.coreprotect</groupId>
+            <artifactId>coreprotect</artifactId>
+            <version>2.14.2</version>
+        </dependency>
+        <dependency>
+            <groupId>me.focusvity</groupId>
+            <artifactId>worldguard</artifactId>
+            <version>6.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>me.totalfreedom</groupId>
+            <artifactId>TF-WorldEdit</artifactId>
+            <version>6.1.9</version>
         </dependency>
     </dependencies>
 
