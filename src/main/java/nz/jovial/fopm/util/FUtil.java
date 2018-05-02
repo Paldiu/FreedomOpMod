@@ -26,6 +26,7 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 public class FUtil
@@ -46,6 +47,18 @@ public class FUtil
             ChatColor.LIGHT_PURPLE);
     private static final Random RANDOM = new Random();
 
+    public static void bcastMsg(String msg, Boolean raw) {
+        if (raw) {
+            Bukkit.broadcastMessage(ChatColor.stripColor(msg));
+        }
+        
+        Bukkit.broadcastMessage(msg);
+    }
+    
+    public static void bcastMsg(String msg) {
+        bcastMsg(msg, false);
+    }
+    
     public static String colorize(String string)
     {
         string = ChatColor.translateAlternateColorCodes('&', string);
