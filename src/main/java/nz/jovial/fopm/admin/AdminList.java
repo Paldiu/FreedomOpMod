@@ -38,7 +38,9 @@ public class AdminList
     public AdminList()
     {
         admins = new ArrayList<>();
+        admins.clear();
         imposters = new ArrayList<>();
+        imposters.clear();
         loadAdmins();
     }
 
@@ -53,7 +55,7 @@ public class AdminList
             ResultSet result = c.prepareStatement("SELECT name FROM admins").executeQuery();
             if (result.next())
             {
-                names.add(result.getString(1));
+                names.add(result.getString("name"));
             }
         }
         catch (SQLException ex)
@@ -84,6 +86,7 @@ public class AdminList
             }
 
             admins.add(admin);
+            admin.save();
         });
 
         FLog.info("Successfully loaded " + admins.size() + " admins!");

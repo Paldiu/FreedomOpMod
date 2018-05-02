@@ -15,7 +15,6 @@
  */
 package nz.jovial.fopm.command;
 
-import nz.jovial.fopm.admin.AdminList;
 import nz.jovial.fopm.rank.Rank;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
@@ -23,8 +22,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-@CommandParameters(description = "Chat to admins", usage = "/<command> <message>", aliases = "ac, o", source = SourceType.BOTH, rank = Rank.SWING_MANAGER)
-public class Command_adminchat
+@CommandParameters(description = "Broadcast your message", usage = "/<command> <message>", source = SourceType.BOTH, rank = Rank.SWING_MANAGER)
+public class Command_say
 {
 
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args)
@@ -34,15 +33,7 @@ public class Command_adminchat
             return false;
         }
 
-        Bukkit.getOnlinePlayers().forEach((player) ->
-        {
-            if (AdminList.isAdmin(player))
-            {
-                player.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.WHITE + "ADMIN" + ChatColor.DARK_GRAY + "] "
-                        + ChatColor.DARK_GREEN + sender.getName() + " " + Rank.getRank(sender).getTag() + ChatColor.WHITE + ": "
-                        + ChatColor.AQUA + StringUtils.join(args, " ", 0, args.length));
-            }
-        });
+        Bukkit.broadcastMessage(ChatColor.DARK_AQUA + "[Server:" + sender.getName() + "] " + StringUtils.join(args, " ", 0, args.length));
         return true;
     }
 }
