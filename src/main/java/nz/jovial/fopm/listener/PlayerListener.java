@@ -29,6 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.command.CommandMap;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -103,6 +104,9 @@ public class PlayerListener implements Listener
             
             event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ban.getKickMessage());
         }
+        
+        PlayerData data = PlayerData.getPlayerData(player);
+        data.setLastLocation(player.getLocation().clone());
     }
 
     @EventHandler
@@ -156,7 +160,10 @@ public class PlayerListener implements Listener
     public void onPlayerTeleport(PlayerTeleportEvent event)
     {
         Player player = event.getPlayer();
-
+        
+        PlayerData data = PlayerData.getPlayerData(player);
+        data.setLastLocation(event.getFrom());
+        
         if (event.getTo().getWorld() == plugin.wm.aw.getWorld() && !Rank.getRank(player).isAtLeast(plugin.wm.aw.getRank()))
         {
             event.setCancelled(true); // Cancel teleport

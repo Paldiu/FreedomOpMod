@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -71,6 +72,9 @@ public class PlayerData
     @Getter
     @Setter
     private boolean isTpToggled = false;
+    @Getter
+    @Setter
+    private Location lastLocation = null;
 
     private PlayerData(Player player)
     {

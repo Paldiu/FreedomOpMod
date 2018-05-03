@@ -5,20 +5,24 @@
  */
 package nz.jovial.fopm.command;
 
+import nz.jovial.fopm.PlayerData;
 import nz.jovial.fopm.rank.Rank;
-import nz.jovial.fopm.world.WorldManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandParameters(description="Set spawn.", usage="/<command>", source=SourceType.IN_GAME, rank=Rank.SWING_MANAGER)
-public class Command_setspawn {
+@CommandParameters(description="Go back to your previous location.", usage="/<command>", source=SourceType.IN_GAME, rank=Rank.OP)
+public class Command_back {
     public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
         Player p = (Player) sender;
-        
-        WorldManager.setSpawn(p);
-        p.sendMessage(ChatColor.GRAY + "Spawn set to " + p.getLocation().getBlockX() + ", " + p.getLocation().getBlockY() + ", " + p.getLocation().getBlockZ() + ".");
+        PlayerData data = PlayerData.getPlayerData(p);
+        if (data.getLastLocation() == null) {
+            p.sendMessage("Error: That location doesn't exist!");
+            return true;
+        }
+        p.sendMessage(ChatColor.GRAY + "Teleporting...");
+        p.teleport(data.getLastLocation());
         
         return true;
     }
