@@ -17,8 +17,10 @@ package nz.jovial.fopm.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -28,9 +30,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 public class FUtil
 {
+    
+    protected static ArrayList<Player> tpToggledOff = new ArrayList<>();
 
     public static final List<ChatColor> CHAT_COLOR_POOL = Arrays.asList(
             ChatColor.DARK_RED,
@@ -46,7 +51,15 @@ public class FUtil
             ChatColor.DARK_PURPLE,
             ChatColor.LIGHT_PURPLE);
     private static final Random RANDOM = new Random();
-
+    
+    public static boolean isTpToggledOff(Player p) {
+        return tpToggledOff.contains(p);
+    }
+    
+    public static void setTpToggled(Player p) {
+        tpToggledOff.add(p);
+    }
+    
     public static void bcastMsg(String msg, Boolean raw) {
         if (raw) {
             Bukkit.broadcastMessage(ChatColor.stripColor(msg));

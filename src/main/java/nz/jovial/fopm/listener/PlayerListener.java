@@ -184,14 +184,12 @@ public class PlayerListener implements Listener
                 continue;
             }
 
-            for (String blocked2 : cmap.getCommand(blocked).getAliases())
-            {
-                if (event.getMessage().equalsIgnoreCase(blocked2) || event.getMessage().split(" ")[0].equalsIgnoreCase(blocked2))
-                {
-                    player.sendMessage(ChatColor.RED + "That command is blocked!");
-                    event.setCancelled(true);
-                }
-            }
+            cmap.getCommand(blocked).getAliases().stream().filter((blocked2) -> (event.getMessage().equalsIgnoreCase(blocked2) || event.getMessage().split(" ")[0].equalsIgnoreCase(blocked2))).map((_item) -> {
+                player.sendMessage(ChatColor.RED + "That command is blocked!");
+                return _item;
+            }).forEachOrdered((_item) -> {
+                event.setCancelled(true);
+            });
         }
 
         for (String blocked : config.getStringList("commands.admins"))
@@ -213,14 +211,12 @@ public class PlayerListener implements Listener
                 continue;
             }
 
-            for (String blocked2 : cmap.getCommand(blocked).getAliases())
-            {
-                if ((event.getMessage().equalsIgnoreCase(blocked2) || event.getMessage().split(" ")[0].equalsIgnoreCase(blocked2)) && !AdminList.isAdmin(player))
-                {
-                    player.sendMessage(ChatColor.RED + "That command is blocked!");
-                    event.setCancelled(true);
-                }
-            }
+            cmap.getCommand(blocked).getAliases().stream().filter((blocked2) -> ((event.getMessage().equalsIgnoreCase(blocked2) || event.getMessage().split(" ")[0].equalsIgnoreCase(blocked2)) && !AdminList.isAdmin(player))).map((_item) -> {
+                player.sendMessage(ChatColor.RED + "That command is blocked!");
+                return _item;
+            }).forEachOrdered((_item) -> {
+                event.setCancelled(true);
+            });
         }
     }
 

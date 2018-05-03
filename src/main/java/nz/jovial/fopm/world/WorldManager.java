@@ -17,6 +17,7 @@ package nz.jovial.fopm.world;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -25,7 +26,12 @@ public class WorldManager
 
     public Flatlands fl;
     public Adminworld aw;
-
+    
+    protected static World spawnLocation;
+    protected static int spawnLocationX = 0;
+    protected static int spawnLocationY = 0;
+    protected static int spawnLocationZ = 0;
+    
     public WorldManager()
     {
         fl = new Flatlands();
@@ -74,5 +80,19 @@ public class WorldManager
         }
 
         player.sendMessage(ChatColor.RED + "Can not find world " + name);
+    }
+    
+    public static void setSpawn(Player p) {
+        spawnLocation = p.getWorld();
+        spawnLocationX = p.getLocation().getBlockX();
+        spawnLocationY = p.getLocation().getBlockY();
+        spawnLocationZ = p.getLocation().getBlockZ();
+    }
+    
+    public static void tpToSpawn(Player p) {
+        World w = spawnLocation;
+        Location finalLoc = w.getBlockAt(spawnLocationX, spawnLocationY, spawnLocationZ).getLocation();
+        p.teleport(finalLoc);
+        
     }
 }
