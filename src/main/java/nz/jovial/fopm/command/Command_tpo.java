@@ -21,6 +21,7 @@ public class Command_tpo {
             return true;
         }
         
+        p.sendMessage(ChatColor.GRAY + "Teleporting...");
         p.teleport(t.getLocation());
         return true;
     }

@@ -8,6 +8,7 @@ package nz.jovial.fopm.command;
 import nz.jovial.fopm.rank.Rank;
 import nz.jovial.fopm.world.WorldManager;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,6 +32,7 @@ public class Command_spawn {
         }
         
         Player p = (Player) sender;
+        p.sendMessage(ChatColor.GRAY + "Teleporting...");
         WorldManager.tpToSpawn(p);
         
         return true;

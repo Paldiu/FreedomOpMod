@@ -12,6 +12,13 @@ general:
   # Website URL - Useful to link to forum for ban appeals, policy, admin applications etc.
   website_url: http://freedomop.boards.net/
   
+  #Spawn point
+  spawn:
+      world: flatlands
+      posx: 0
+      posy: 50
+      posz: 0
+  
 commands:
   default:
     - '/gamemode'
