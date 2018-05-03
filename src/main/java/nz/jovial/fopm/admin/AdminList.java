@@ -86,7 +86,6 @@ public class AdminList
             }
 
             admins.add(admin);
-            admin.save();
         });
 
         FLog.info("Successfully loaded " + admins.size() + " admins!");
