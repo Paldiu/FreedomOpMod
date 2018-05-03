@@ -46,7 +46,7 @@ public class ServerListener implements Listener
             return;
         }
 
-        String motd = FreedomOpMod.plugin.config.getConfig().getString("general.motd").replace("||", "\n");
+        String motd = FUtil.colorize(FreedomOpMod.plugin.config.getConfig().getString("general.motd").replace("||", "\n"));
         event.setMotd(motd);
     }
 }

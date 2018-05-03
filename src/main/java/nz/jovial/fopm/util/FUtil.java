@@ -28,15 +28,20 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import nz.jovial.fopm.admin.AdminList;
+import nz.jovial.fopm.rank.Rank;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class FUtil
 {
     
     protected static ArrayList<Player> tpToggledOff = new ArrayList<>();
-
+    protected static ArrayList<Player> inAdminChat = new ArrayList<>();
+    
     public static final List<ChatColor> CHAT_COLOR_POOL = Arrays.asList(
             ChatColor.DARK_RED,
             ChatColor.RED,
@@ -52,12 +57,19 @@ public class FUtil
             ChatColor.LIGHT_PURPLE);
     private static final Random RANDOM = new Random();
     
-    public static boolean isTpToggledOff(Player p) {
-        return tpToggledOff.contains(p);
-    }
-    
-    public static void setTpToggled(Player p) {
-        tpToggledOff.add(p);
+    public static void adminChatMsg(CommandSender p, String msg) {
+        //added a console log for adminchat
+        FLog.info("[ADMIN] " + p.getName() + " " + Rank.getRank(p).getTag() + ": " + msg);
+        
+        Bukkit.getOnlinePlayers().forEach((player) ->
+        {
+            if (AdminList.isAdmin(player))
+            {
+                player.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.WHITE + "ADMIN" + ChatColor.DARK_GRAY + "] "
+                        + ChatColor.DARK_GREEN + p.getName() + " " + Rank.getRank(p).getTag() + ChatColor.WHITE + ": "
+                        + ChatColor.AQUA + msg);
+            }
+        });
     }
     
     public static void bcastMsg(String msg, Boolean raw) {

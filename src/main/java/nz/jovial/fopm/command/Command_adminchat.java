@@ -15,13 +15,16 @@
  */
 package nz.jovial.fopm.command;
 
+import nz.jovial.fopm.PlayerData;
 import nz.jovial.fopm.admin.AdminList;
 import nz.jovial.fopm.rank.Rank;
+import nz.jovial.fopm.util.FUtil;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 @CommandParameters(description = "Chat to admins", usage = "/<command> <message>", aliases = "ac, o", source = SourceType.BOTH, rank = Rank.SWING_MANAGER)
 public class Command_adminchat
@@ -29,20 +32,21 @@ public class Command_adminchat
 
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args)
     {
+        
+        
         if (args.length < 1)
         {
-            return false;
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("Only in game players can toggle adminchat.");
+                return true;
+            }
+            Player p = (Player) sender;
+            PlayerData data = PlayerData.getPlayerData(p);
+            boolean inAdminchat = data.isInAdminchat();
+            data.setInAdminchat(!inAdminchat);
         }
 
-        Bukkit.getOnlinePlayers().forEach((player) ->
-        {
-            if (AdminList.isAdmin(player))
-            {
-                player.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.WHITE + "ADMIN" + ChatColor.DARK_GRAY + "] "
-                        + ChatColor.DARK_GREEN + sender.getName() + " " + Rank.getRank(sender).getTag() + ChatColor.WHITE + ": "
-                        + ChatColor.AQUA + StringUtils.join(args, " ", 0, args.length));
-            }
-        });
+        FUtil.adminChatMsg(sender, StringUtils.join(args, " ", 0, args.length));
         return true;
     }
 }

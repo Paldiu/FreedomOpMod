@@ -5,12 +5,11 @@
  */
 package nz.jovial.fopm.command;
 
+import nz.jovial.fopm.PlayerData;
 import nz.jovial.fopm.rank.Rank;
-import nz.jovial.fopm.util.FUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -30,7 +29,10 @@ public class Command_tp {
             return true;
         }
         
-        if (FUtil.isTpToggledOff(t)) {
+        PlayerData data = PlayerData.getPlayerData(t);
+        boolean isTpToggled = data.isTpToggled();
+        
+        if (isTpToggled) {
             p.sendMessage(ChatColor.RED + "ERROR: This player has teleportation disabled.");
             return true;
         }

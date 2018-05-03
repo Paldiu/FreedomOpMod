@@ -27,7 +27,7 @@ public class WorldManager
     public Flatlands fl;
     public Adminworld aw;
     
-    protected static World spawnLocation;
+    protected static World spawnLocation = Bukkit.getServer().getWorld("flatlands");
     protected static int spawnLocationX = 0;
     protected static int spawnLocationY = 0;
     protected static int spawnLocationZ = 0;

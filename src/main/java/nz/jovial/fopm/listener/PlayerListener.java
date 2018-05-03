@@ -96,6 +96,11 @@ public class PlayerListener implements Listener
 
         if (BanManager.isBanned(player) && !ban.isExpired())
         {
+            //Why wasn't this here before?
+            if (AdminList.isAdmin(player)) {
+                event.allow();
+            }
+            
             event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ban.getKickMessage());
         }
     }
@@ -109,6 +114,12 @@ public class PlayerListener implements Listener
         {
             event.getPlayer().sendMessage(ChatColor.RED + "You may not chat when muted!");
             event.setCancelled(true);
+            return;
+        }
+        
+        if (data.isInAdminchat()) {
+            event.setCancelled(true);
+            FUtil.adminChatMsg(event.getPlayer(), event.getMessage().trim());
             return;
         }
 

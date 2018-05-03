@@ -1,7 +1,7 @@
 package nz.jovial.fopm.command;
 
+import nz.jovial.fopm.PlayerData;
 import nz.jovial.fopm.rank.Rank;
-import nz.jovial.fopm.util.FUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -10,7 +10,9 @@ import org.bukkit.entity.Player;
 public class Command_tptoggle {
     public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
         Player p = (Player) sender;
-        FUtil.setTpToggled(p);
+        PlayerData data = PlayerData.getPlayerData(p);
+        boolean isTpToggled = data.isTpToggled();
+        data.setTpToggled(!isTpToggled);
         
         return true;
     }

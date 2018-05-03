@@ -68,6 +68,9 @@ public class PlayerData
     @Getter
     @Setter
     private boolean inAdminchat = false;
+    @Getter
+    @Setter
+    private boolean isTpToggled = false;
 
     private PlayerData(Player player)
     {
@@ -100,6 +103,8 @@ public class PlayerData
         }.runTaskLater(FreedomOpMod.plugin, 60L * 20L * 5L);
     }
 
+    
+    
     public boolean isFrozen()
     {
         return frozenTask != null;
