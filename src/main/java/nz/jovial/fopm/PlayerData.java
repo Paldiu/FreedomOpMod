@@ -75,6 +75,9 @@ public class PlayerData
     @Getter
     @Setter
     private Location lastLocation = null;
+    @Getter
+    @Setter
+    private boolean isVanished = false;
 
     private PlayerData(Player player)
     {
