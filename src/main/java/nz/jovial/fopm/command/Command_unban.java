@@ -15,15 +15,20 @@
  */
 package nz.jovial.fopm.command;
 
-import nz.jovial.fopm.rank.Rank;
 import nz.jovial.fopm.banning.Ban;
 import nz.jovial.fopm.banning.BanManager;
+import nz.jovial.fopm.banning.BanType;
+import nz.jovial.fopm.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-@CommandParameters(description = "Unbans a player", usage = "/<command> <player>", source = SourceType.BOTH, rank = Rank.SWING_MANAGER)
+import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+@CommandParameters(description = "Unbans a player or an IP", usage = "/<command> <username | ip>", source = SourceType.BOTH, rank = Rank.SWING_MANAGER)
 public class Command_unban
 {
 
@@ -34,22 +39,44 @@ public class Command_unban
             return false;
         }
 
-        String name = args[0];
+        String target = args[0];
 
-        for (Ban ban : BanManager.getBans())
+        //name bans
+        for (Ban ban : BanManager.getBanMap().getOrDefault(BanType.NORMAL, Collections.emptyList()))
         {
-            if (ban.getName().equalsIgnoreCase(name))
+            if (ban.getName().equals(target))
             {
-                Bukkit.broadcastMessage(ChatColor.GREEN + sender.getName() + " - Unbanning " + name);
+                Bukkit.broadcastMessage(ChatColor.GREEN + sender.getName() + " - Unbanning " + target);
                 BanManager.removeBan(ban);
                 return true;
             }
-            else
+        }
+
+        //ip bans
+        for (Ban ban : BanManager.getBanMap().getOrDefault(BanType.IP, Collections.emptyList()))
+        {
+            if (ban.getIp().equals(target))
             {
-                sender.sendMessage(ChatColor.RED + "There is no players banned with the name of " + name);
+                Bukkit.broadcastMessage(ChatColor.GREEN + sender.getName() + " - Unbanning IP: " + target);
+                BanManager.removeBan(ban);
                 return true;
             }
         }
+        //normal ban contains ip
+        for (Ban ban : BanManager.getBanMap().getOrDefault(BanType.NORMAL, Collections.emptyList()))
+        {
+            if (ban.getIp().equals(target))
+            {
+                Bukkit.broadcastMessage(ChatColor.GREEN + sender.getName() + " - Unbanning IP: " + target);
+                BanManager.removeBan(ban);
+                return true;
+            }
+        }
+
+        Pattern patt = Pattern.compile("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+        Matcher m = patt.matcher(args[0]);
+        sender.sendMessage(m.matches() ? ChatColor.DARK_GRAY + "IP is not banned." : ChatColor.DARK_GRAY + "Player is not banned.");
+
         return true;
     }
 }

@@ -15,33 +15,23 @@
  */
 package nz.jovial.fopm.util;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.google.gson.Gson;
 import nz.jovial.fopm.admin.AdminList;
 import nz.jovial.fopm.rank.Rank;
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class FUtil
 {
-    
-    protected static ArrayList<Player> tpToggledOff = new ArrayList<>();
-    protected static ArrayList<Player> inAdminChat = new ArrayList<>();
-    
+
     public static final List<ChatColor> CHAT_COLOR_POOL = Arrays.asList(
             ChatColor.DARK_RED,
             ChatColor.RED,
@@ -56,11 +46,15 @@ public class FUtil
             ChatColor.DARK_PURPLE,
             ChatColor.LIGHT_PURPLE);
     private static final Random RANDOM = new Random();
-    
-    public static void adminChatMsg(CommandSender p, String msg) {
+    public static String DATE_STORAGE_FORMAT = "EEE, d MMM yyyy HH:mm:ss Z";
+    protected static ArrayList<Player> tpToggledOff = new ArrayList<>();
+    protected static ArrayList<Player> inAdminChat = new ArrayList<>();
+
+    public static void adminChatMsg(CommandSender p, String msg)
+    {
         //added a console log for adminchat
         FLog.info("[ADMIN] " + p.getName() + " " + Rank.getRank(p).getTag() + ": " + msg);
-        
+
         Bukkit.getOnlinePlayers().forEach((player) ->
         {
             if (AdminList.isAdmin(player))
@@ -71,27 +65,28 @@ public class FUtil
             }
         });
     }
-    
-    public static void bcastMsg(String msg, Boolean raw) {
-        if (raw) {
+
+    public static void bcastMsg(String msg, Boolean raw)
+    {
+        if (raw)
+        {
             Bukkit.broadcastMessage(ChatColor.stripColor(msg));
         }
-        
+
         Bukkit.broadcastMessage(msg);
     }
-    
-    public static void bcastMsg(String msg) {
+
+    public static void bcastMsg(String msg)
+    {
         bcastMsg(msg, false);
     }
-    
+
     public static String colorize(String string)
     {
         string = ChatColor.translateAlternateColorCodes('&', string);
         string = string.replace("&-", CHAT_COLOR_POOL.get(RANDOM.nextInt(CHAT_COLOR_POOL.size())).toString());
         return string;
     }
-
-    public static String DATE_STORAGE_FORMAT = "EEE, d MMM yyyy HH:mm:ss Z";
 
     public static String dateToString(Date date)
     {
@@ -134,12 +129,12 @@ public class FUtil
     {
         Pattern timePattern = Pattern.compile(
                 "(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?"
-                + "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?"
-                + "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?"
-                + "(?:([0-9]+)\\s*d[a-z]*[,\\s]*)?"
-                + "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?"
-                + "(?:([0-9]+)\\s*m[a-z]*[,\\s]*)?"
-                + "(?:([0-9]+)\\s*(?:s[a-z]*)?)?", Pattern.CASE_INSENSITIVE);
+                        + "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?"
+                        + "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?"
+                        + "(?:([0-9]+)\\s*d[a-z]*[,\\s]*)?"
+                        + "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?"
+                        + "(?:([0-9]+)\\s*m[a-z]*[,\\s]*)?"
+                        + "(?:([0-9]+)\\s*(?:s[a-z]*)?)?", Pattern.CASE_INSENSITIVE);
         Matcher m = timePattern.matcher(time);
         int years = 0;
         int months = 0;
@@ -233,5 +228,16 @@ public class FUtil
         }
 
         return c.getTime();
+    }
+
+    public static String serializeArray(final List<String> data)
+    {
+        return new Gson().toJson(data);
+    }
+
+    public static List<String> deserializeArray(final String data)
+    {
+        String[] array = new Gson().fromJson(data, String[].class);
+        return Arrays.asList(array);
     }
 }

@@ -25,18 +25,39 @@ import org.bukkit.entity.Player;
 public class WorldManager
 {
 
-    public Flatlands fl;
-    public Adminworld aw;
-    
     protected static World spawnLocation = Bukkit.getServer().getWorld(FreedomOpMod.plugin.config.getConfig().getString("general.spawn.world"));
     protected static int spawnLocationX = FreedomOpMod.plugin.config.getConfig().getInt("general.spawn.posx");
     protected static int spawnLocationY = FreedomOpMod.plugin.config.getConfig().getInt("general.spawn.posy");
     protected static int spawnLocationZ = FreedomOpMod.plugin.config.getConfig().getInt("general.spawn.posz");
-    
+    public Flatlands fl;
+    public Adminworld aw;
+
     public WorldManager()
     {
         fl = new Flatlands();
         aw = new Adminworld();
+    }
+
+    public static void setSpawn(Player p)
+    {
+
+        spawnLocationX = p.getLocation().getBlockX();
+        spawnLocationY = p.getLocation().getBlockY();
+        spawnLocationZ = p.getLocation().getBlockZ();
+        FreedomOpMod.plugin.config.getConfig().set("general.spawn.world", p.getWorld().getName());
+        FreedomOpMod.plugin.config.getConfig().set("general.spawn.posx", spawnLocationX);
+        FreedomOpMod.plugin.config.getConfig().set("general.spawn.posy", spawnLocationY);
+        FreedomOpMod.plugin.config.getConfig().set("general.spawn.posz", spawnLocationZ);
+        FreedomOpMod.plugin.config.saveConfig();
+
+    }
+
+    public static void tpToSpawn(Player p)
+    {
+        World w = spawnLocation;
+        Location finalLoc = w.getBlockAt(spawnLocationX, spawnLocationY, spawnLocationZ).getLocation();
+        p.teleport(finalLoc);
+
     }
 
     public void loadWorlds()
@@ -81,25 +102,5 @@ public class WorldManager
         }
 
         player.sendMessage(ChatColor.RED + "Can not find world " + name);
-    }
-    
-    public static void setSpawn(Player p) {
-        
-        spawnLocationX = p.getLocation().getBlockX();
-        spawnLocationY = p.getLocation().getBlockY();
-        spawnLocationZ = p.getLocation().getBlockZ();
-        FreedomOpMod.plugin.config.getConfig().set("general.spawn.world", p.getWorld().getName());
-        FreedomOpMod.plugin.config.getConfig().set("general.spawn.posx", spawnLocationX);
-        FreedomOpMod.plugin.config.getConfig().set("general.spawn.posy", spawnLocationY);
-        FreedomOpMod.plugin.config.getConfig().set("general.spawn.posz", spawnLocationZ);
-        FreedomOpMod.plugin.config.saveConfig();
-        
-    }
-    
-    public static void tpToSpawn(Player p) {
-        World w = spawnLocation;
-        Location finalLoc = w.getBlockAt(spawnLocationX, spawnLocationY, spawnLocationZ).getLocation();
-        p.teleport(finalLoc);
-        
     }
 }

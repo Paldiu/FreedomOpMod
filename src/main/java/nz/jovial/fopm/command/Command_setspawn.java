@@ -12,14 +12,16 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandParameters(description="Set spawn.", usage="/<command>", source=SourceType.IN_GAME, rank=Rank.SWING_MANAGER)
-public class Command_setspawn {
-    public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
+@CommandParameters(description = "Set spawn.", usage = "/<command>", source = SourceType.IN_GAME, rank = Rank.SWING_MANAGER)
+public class Command_setspawn
+{
+    public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args)
+    {
         Player p = (Player) sender;
-        
+
         WorldManager.setSpawn(p);
         p.sendMessage(ChatColor.GRAY + "Spawn set to " + p.getLocation().getBlockX() + ", " + p.getLocation().getBlockY() + ", " + p.getLocation().getBlockZ() + ".");
-        
+
         return true;
     }
 }

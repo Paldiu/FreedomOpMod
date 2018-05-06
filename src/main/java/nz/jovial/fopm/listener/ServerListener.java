@@ -30,7 +30,7 @@ public class ServerListener implements Listener
     {
         Bukkit.getPluginManager().registerEvents(this, plugin);
     }
-    
+
     @EventHandler
     public void onServerListPing(ServerListPingEvent event)
     {

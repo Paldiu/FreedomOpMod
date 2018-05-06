@@ -16,12 +16,9 @@
 package nz.jovial.fopm.command;
 
 import nz.jovial.fopm.PlayerData;
-import nz.jovial.fopm.admin.AdminList;
 import nz.jovial.fopm.rank.Rank;
 import nz.jovial.fopm.util.FUtil;
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -32,11 +29,12 @@ public class Command_adminchat
 
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args)
     {
-        
-        
+
+
         if (args.length < 1)
         {
-            if (!(sender instanceof Player)) {
+            if (!(sender instanceof Player))
+            {
                 sender.sendMessage("Only in game players can toggle adminchat.");
                 return true;
             }

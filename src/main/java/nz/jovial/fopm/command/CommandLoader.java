@@ -15,6 +15,11 @@
  */
 package nz.jovial.fopm.command;
 
+import nz.jovial.fopm.FreedomOpMod;
+import nz.jovial.fopm.util.FLog;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandMap;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -25,10 +30,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
-import nz.jovial.fopm.FreedomOpMod;
-import nz.jovial.fopm.util.FLog;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandMap;
 
 public class CommandLoader
 {

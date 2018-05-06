@@ -37,8 +37,16 @@ public abstract class CustomWorld
 
     public final World getWorld()
     {
-        if (world == null || !Bukkit.getWorlds().contains(name))
+        if (world == null)
         {
+            for (World world : Bukkit.getWorlds())
+            {
+                if (world.getName().equals(name))
+                {
+                    this.world = world;
+                    return world;
+                }
+            }
             world = generateWorld();
         }
 

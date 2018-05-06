@@ -15,8 +15,6 @@
  */
 package nz.jovial.fopm.bridge;
 
-import java.util.Arrays;
-import java.util.List;
 import net.coreprotect.CoreProtect;
 import net.coreprotect.CoreProtectAPI;
 import nz.jovial.fopm.FreedomOpMod;
@@ -25,11 +23,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class CoreProtectBridge
 {
 
-    private static CoreProtectAPI cpAPI = null;
     private static final List<String> tables = Arrays.asList("co_sign", "co_session", "co_container", "co_block");
+    private static CoreProtectAPI cpAPI = null;
 
     public static CoreProtect getCoreProtect()
     {

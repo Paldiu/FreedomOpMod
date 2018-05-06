@@ -15,25 +15,27 @@
  */
 package nz.jovial.fopm.admin;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.Getter;
 import nz.jovial.fopm.rank.Rank;
 import nz.jovial.fopm.util.FLog;
+import nz.jovial.fopm.util.FUtil;
 import nz.jovial.fopm.util.SQLHandler;
 import org.bukkit.entity.Player;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class AdminList
 {
 
     @Getter
-    private static List<Admin> admins;
-    @Getter
     public static List<String> imposters;
+    @Getter
+    private static List<Admin> admins;
 
     public AdminList()
     {
@@ -47,46 +49,26 @@ public class AdminList
     public static void loadAdmins()
     {
         admins.clear();
-        List<String> names = new ArrayList<>();
         Connection c = SQLHandler.getConnection();
-
         try
         {
-            ResultSet result = c.prepareStatement("SELECT name FROM admins").executeQuery();
-            if (result.next())
+            ResultSet result = c.prepareStatement("SELECT * FROM admins").executeQuery();
+            while (result.next())
             {
-                names.add(result.getString("name"));
+                String username = result.getString("name");
+                Admin admin = new Admin();
+                admin.setName(username);
+                List<String> ips = FUtil.deserializeArray(result.getString("ips"));
+                admin.setIps(ips);
+                admin.setRank(Rank.stringToRank(result.getString("rank")));
+                admin.setActive(result.getBoolean("active"));
+                admins.add(admin);
             }
         }
         catch (SQLException ex)
         {
             FLog.severe(ex);
         }
-
-        names.forEach((name) ->
-        {
-            Admin admin = new Admin();
-            admin.setName(name);
-
-            try
-            {
-                PreparedStatement statement = c.prepareStatement("SELECT * FROM admins WHERE name = ?");
-                statement.setString(1, name);
-                ResultSet result = statement.executeQuery();
-                if (result.next())
-                {
-                    admin.setIp(result.getString("ip"));
-                    admin.setRank(Rank.stringToRank(result.getString("rank")));
-                    admin.setActive(result.getBoolean("active"));
-                }
-            }
-            catch (SQLException ex)
-            {
-                FLog.severe(ex);
-            }
-
-            admins.add(admin);
-        });
 
         FLog.info("Successfully loaded " + admins.size() + " admins!");
     }
@@ -111,7 +93,7 @@ public class AdminList
 
         Admin admin = new Admin();
         admin.setName(player.getName());
-        admin.setIp(player.getAddress().getHostString());
+        admin.setIps(Collections.singletonList(player.getAddress().getHostString()));
         admin.setRank(Rank.SWING_MANAGER);
         admin.setActive(true);
         addAdmin(admin);
@@ -137,8 +119,12 @@ public class AdminList
         }
 
         Admin admin = getAdmin(player);
-        admin.setIp(player.getAddress().getHostString());
+        admins.remove(admin);
+        List<String> ips = admin.getIps();
+        ips.add(player.getAddress().getHostString());
+        admin.setIps(ips);
         admin.update();
+        admins.add(admin);
     }
 
     public static void updateActive(Player player, boolean active)
@@ -149,8 +135,10 @@ public class AdminList
         }
 
         Admin admin = getAdmin(player);
+        admins.remove(admin);
         admin.setActive(active);
         admin.update();
+        admins.add(admin);
     }
 
     public static void removeAdmin(Admin admin)
@@ -169,7 +157,7 @@ public class AdminList
         String name = admin.getName();
         for (Admin a : admins)
         {
-            return a.getName().equalsIgnoreCase(name);
+            return a.getName().equals(name);
         }
         return false;
     }
@@ -183,7 +171,7 @@ public class AdminList
     {
         for (Admin admin : admins)
         {
-            if (admin.getName().equalsIgnoreCase(player.getName()))
+            if (admin.getName().equals(player.getName()))
             {
                 return admin;
             }

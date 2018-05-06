@@ -49,21 +49,6 @@ public enum Rank
         this.tag = ChatColor.DARK_GRAY + "[" + color + tag + ChatColor.DARK_GRAY + "]" + color;
     }
 
-    public int getLevel()
-    {
-        return ordinal();
-    }
-
-    public boolean isAtLeast(Rank rank)
-    {
-        return getLevel() >= rank.getLevel();
-    }
-
-    public String getLoginMessage()
-    {
-        return ChatColor.YELLOW + " is " + getDeterminer() + " " + getColor() + getName();
-    }
-
     public static Rank stringToRank(String name)
     {
         try
@@ -98,5 +83,20 @@ public enum Rank
             return getRank((Player) sender);
         }
         return Rank.CONSOLE;
+    }
+
+    public int getLevel()
+    {
+        return ordinal();
+    }
+
+    public boolean isAtLeast(Rank rank)
+    {
+        return getLevel() >= rank.getLevel();
+    }
+
+    public String getLoginMessage()
+    {
+        return ChatColor.YELLOW + " is " + getDeterminer() + " " + getColor() + getName();
     }
 }

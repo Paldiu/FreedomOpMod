@@ -15,15 +15,12 @@
  */
 package nz.jovial.fopm.util;
 
-import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
 import lombok.Getter;
 import nz.jovial.fopm.FreedomOpMod;
 import org.bukkit.entity.Player;
+
+import java.sql.*;
 
 public class SQLHandler
 {
@@ -35,34 +32,7 @@ public class SQLHandler
     public SQLHandler(FreedomOpMod plugin)
     {
         this.plugin = plugin;
-        try
-        {
-            File database = new File(plugin.getDataFolder() + File.separator + "freedomop.db");
-            String url = "jdbc:sqlite:" + database.getAbsolutePath();
-            if (!database.exists())
-            {
-                connection = DriverManager.getConnection(url);
-                if (connection != null)
-                {
-                    FLog.info("Missing database file. Generating a new database file...");
-                    generateTables();
-                    FLog.info("Database created!");
-                }
-            }
-            else
-            {
-                connection = DriverManager.getConnection(url);
-                if (connection != null)
-                {
-                    generateTables();
-                    FLog.info("Loaded existing database file.");
-                }
-            }
-        }
-        catch (SQLException ex)
-        {
-            FLog.severe(ex);
-        }
+
     }
 
     public static boolean playerExists(Player player)
@@ -119,33 +89,64 @@ public class SQLHandler
         }
     }
 
-    public static void generateTables() throws SQLException
+    public boolean init()
     {
-        Connection c = getConnection();
+        String hostname = plugin.config.getConfig().getString("sql.hostname");
+        int port = plugin.config.getConfig().getInt("sql.port");
+        String dbName = plugin.config.getConfig().getString("sql.databaseName");
+        String username = plugin.config.getConfig().getString("sql.username");
+        String password = plugin.config.getConfig().getString("sql.password");
+        ;
+        if (password == null)
+        {
+            password = "";
+        } // password can be empty in MySQL
+        try
+        {
+            connection = connectToDatabase(hostname, port, dbName, username, password);
+            this.generateTables();
+            return true;
+        }
+        catch (IllegalAccessException | InstantiationException | SQLException | ClassNotFoundException ex)
+        {
+            FLog.severe(ex);
+            return false;
+        }
+    }
+
+    private Connection connectToDatabase(String hostname, int port, String databaseName, String username, String password) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException
+    {
+        String url = "jdbc:mysql://" + hostname + ":" + port + "/" + databaseName;
+        Class.forName("com.mysql.jdbc.Driver").newInstance();
+        Connection c = DriverManager.getConnection(url, username, password);
+        return c;
+    }
+
+    private void generateTables() throws SQLException
+    {
+        Connection c = connection;
         String admins = "CREATE TABLE IF NOT EXISTS admins ("
-                + "name TEXT PRIMARY KEY,"
-                + "ip VARCHAR(64) NOT NULL,"
-                + "rank VARCHAR(64) NOT NULL,"
+                + "name VARCHAR(64) PRIMARY KEY,"
+                + "ips VARCHAR(255) NOT NULL,"
+                + "rank VARCHAR(64) NOT NULL," // not SET in case of adding extra ranks
                 + "active BOOLEAN NOT NULL"
                 + ")";
         String players = "CREATE TABLE IF NOT EXISTS players ("
-                + "name TEXT PRIMARY KEY,"
+                + "name VARCHAR(64) PRIMARY KEY,"
                 + "ip VARCHAR(64) NOT NULL"
                 + ")";
         String bans = "CREATE TABLE IF NOT EXISTS bans ("
-                + "name TEXT PRIMARY KEY,"
+                + "name TEXT,"
                 + "ip VARCHAR(64),"
-                + "by TEXT NOT NULL,"
+                + "`by` TEXT NOT NULL,"
                 + "reason TEXT,"
-                + "expiry LONG NOT NULL"
+                + "expiry LONG NOT NULL,"
+                + "type SET('PERMANENT_IP', 'PERMANENT_NAME', 'PERMANENT', 'NAME', 'IP', 'NORMAL') NOT NULL"
                 + ")";
-        String permbans = "CREATE TABLE IF NOT EXISTS permbans ("
-                + "name TEXT PRIMARY KEY NOT NULL,"
-                + "ip VARCHAR(64) NOT NULL"
-                + ")";
+
         c.prepareStatement(admins).executeUpdate();
         c.prepareStatement(players).executeUpdate();
         c.prepareStatement(bans).executeUpdate();
-        c.prepareStatement(permbans).executeUpdate();
     }
 }
+

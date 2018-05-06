@@ -42,3 +42,13 @@ commands:
     - '/reload'
     - '/socialspy'
     - '/gamerule'
+    - '/kick'
+
+  # MySQL/MariaDB details are REQUIRED.
+sql:
+  hostname: 127.0.0.1
+  port: 3306
+  username: root
+  password: ''
+  databaseName: freedomop
+

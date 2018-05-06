@@ -15,13 +15,12 @@
  */
 package nz.jovial.fopm.listener;
 
-import java.lang.reflect.Field;
 import nz.jovial.fopm.FreedomOpMod;
 import nz.jovial.fopm.PlayerData;
 import nz.jovial.fopm.admin.AdminList;
-import nz.jovial.fopm.rank.Rank;
 import nz.jovial.fopm.banning.Ban;
 import nz.jovial.fopm.banning.BanManager;
+import nz.jovial.fopm.rank.Rank;
 import nz.jovial.fopm.util.FLog;
 import nz.jovial.fopm.util.FUtil;
 import nz.jovial.fopm.util.SQLHandler;
@@ -29,18 +28,14 @@ import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.command.CommandMap;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
+
+import java.lang.reflect.Field;
 
 public class PlayerListener implements Listener
 {
@@ -72,7 +67,7 @@ public class PlayerListener implements Listener
 
         if (AdminList.isAdmin(player))
         {
-            if (!AdminList.getAdmin(player).getIp().equals(player.getAddress().getHostString()))
+            if (!AdminList.getAdmin(player).getIps().contains(player.getAddress().getHostString()))
             {
                 AdminList.getImposters().add(player.getName());
                 Bukkit.broadcastMessage(ChatColor.RED + player.getName() + " has been flagged as an imposter!");
@@ -98,13 +93,14 @@ public class PlayerListener implements Listener
         if (BanManager.isBanned(player) && !ban.isExpired())
         {
             //Why wasn't this here before?
-            if (AdminList.isAdmin(player)) {
+            if (AdminList.isAdmin(player))
+            {
                 event.allow();
             }
-            
+
             event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ban.getKickMessage());
         }
-        
+
         PlayerData data = PlayerData.getPlayerData(player);
         data.setLastLocation(player.getLocation().clone());
     }
@@ -120,8 +116,9 @@ public class PlayerListener implements Listener
             event.setCancelled(true);
             return;
         }
-        
-        if (data.isInAdminchat()) {
+
+        if (data.isInAdminchat())
+        {
             event.setCancelled(true);
             FUtil.adminChatMsg(event.getPlayer(), event.getMessage().trim());
             return;
@@ -160,10 +157,10 @@ public class PlayerListener implements Listener
     public void onPlayerTeleport(PlayerTeleportEvent event)
     {
         Player player = event.getPlayer();
-        
+
         PlayerData data = PlayerData.getPlayerData(player);
         data.setLastLocation(event.getFrom());
-        
+
         if (event.getTo().getWorld() == plugin.wm.aw.getWorld() && !Rank.getRank(player).isAtLeast(plugin.wm.aw.getRank()))
         {
             event.setCancelled(true); // Cancel teleport
@@ -202,10 +199,12 @@ public class PlayerListener implements Listener
                 continue;
             }
 
-            cmap.getCommand(blocked).getAliases().stream().filter((blocked2) -> (event.getMessage().equalsIgnoreCase(blocked2) || event.getMessage().split(" ")[0].equalsIgnoreCase(blocked2))).map((_item) -> {
+            cmap.getCommand(blocked).getAliases().stream().filter((blocked2) -> (event.getMessage().equalsIgnoreCase(blocked2) || event.getMessage().split(" ")[0].equalsIgnoreCase(blocked2))).map((_item) ->
+            {
                 player.sendMessage(ChatColor.RED + "That command is blocked!");
                 return _item;
-            }).forEachOrdered((_item) -> {
+            }).forEachOrdered((_item) ->
+            {
                 event.setCancelled(true);
             });
         }
@@ -229,10 +228,12 @@ public class PlayerListener implements Listener
                 continue;
             }
 
-            cmap.getCommand(blocked).getAliases().stream().filter((blocked2) -> ((event.getMessage().equalsIgnoreCase(blocked2) || event.getMessage().split(" ")[0].equalsIgnoreCase(blocked2)) && !AdminList.isAdmin(player))).map((_item) -> {
+            cmap.getCommand(blocked).getAliases().stream().filter((blocked2) -> ((event.getMessage().equalsIgnoreCase(blocked2) || event.getMessage().split(" ")[0].equalsIgnoreCase(blocked2)) && !AdminList.isAdmin(player))).map((_item) ->
+            {
                 player.sendMessage(ChatColor.RED + "That command is blocked!");
                 return _item;
-            }).forEachOrdered((_item) -> {
+            }).forEachOrdered((_item) ->
+            {
                 event.setCancelled(true);
             });
         }

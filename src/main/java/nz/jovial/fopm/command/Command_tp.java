@@ -14,33 +14,38 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandParameters(description="Tp to a player.", usage="/<command> <player>", source=SourceType.IN_GAME, rank=Rank.OP)
-public class Command_tp {
-    public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
+@CommandParameters(description = "Tp to a player.", usage = "/<command> <player>", source = SourceType.IN_GAME, rank = Rank.OP)
+public class Command_tp
+{
+    public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args)
+    {
         Player p = (Player) sender;
-        
-        if ((args.length < 1) || (args.length > 1)) {
+
+        if ((args.length < 1) || (args.length > 1))
+        {
             return false;
         }
-        
+
         Player t = Bukkit.getPlayer(args[0]);
-        if (t == null) {
+        if (t == null)
+        {
             p.sendMessage(ChatColor.YELLOW + "That player is not online!");
             return true;
         }
-        
+
         PlayerData data = PlayerData.getPlayerData(t);
         boolean isTpToggled = data.isTpToggled();
-        
-        if (isTpToggled) {
+
+        if (isTpToggled)
+        {
             p.sendMessage(ChatColor.RED + "ERROR: This player has teleportation disabled.");
             return true;
         }
-        
+
         p.sendMessage(ChatColor.GRAY + "Teleporting...");
         Location l = t.getLocation();
         p.teleport(l);
-        
+
         return true;
     }
 }

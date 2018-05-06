@@ -15,7 +15,6 @@
  */
 package nz.jovial.fopm;
 
-import java.sql.SQLException;
 import nz.jovial.fopm.admin.AdminList;
 import nz.jovial.fopm.banning.BanManager;
 import nz.jovial.fopm.command.CommandLoader;
@@ -25,7 +24,10 @@ import nz.jovial.fopm.listener.WorldEditListener;
 import nz.jovial.fopm.util.FLog;
 import nz.jovial.fopm.util.SQLHandler;
 import nz.jovial.fopm.world.WorldManager;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.sql.SQLException;
 
 public class FreedomOpMod extends JavaPlugin
 {
@@ -54,8 +56,15 @@ public class FreedomOpMod extends JavaPlugin
         FreedomOpMod.plugin = this;
 
         config.loadConfig();
-        cl = new CommandLoader();
+
         sqlh = new SQLHandler(plugin);
+        if (!sqlh.init())
+        {
+            FLog.severe("SQL has failed to connect. The plugin is disabling..");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
+        cl = new CommandLoader();
         al = new AdminList();
         bm = new BanManager();
         pl = new PlayerListener(plugin);
@@ -76,6 +85,7 @@ public class FreedomOpMod extends JavaPlugin
         config.saveConfig();
         try
         {
+            SQLHandler.getConnection().commit();
             SQLHandler.getConnection().close();
         }
         catch (SQLException ex)

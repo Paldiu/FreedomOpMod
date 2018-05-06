@@ -12,18 +12,21 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandParameters(description="Go back to your previous location.", usage="/<command>", source=SourceType.IN_GAME, rank=Rank.OP)
-public class Command_back {
-    public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args) {
+@CommandParameters(description = "Go back to your previous location.", usage = "/<command>", source = SourceType.IN_GAME, rank = Rank.OP)
+public class Command_back
+{
+    public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args)
+    {
         Player p = (Player) sender;
         PlayerData data = PlayerData.getPlayerData(p);
-        if (data.getLastLocation() == null) {
+        if (data.getLastLocation() == null)
+        {
             p.sendMessage("Error: That location doesn't exist!");
             return true;
         }
         p.sendMessage(ChatColor.GRAY + "Teleporting...");
         p.teleport(data.getLastLocation());
-        
+
         return true;
     }
 }

@@ -15,16 +15,18 @@
  */
 package nz.jovial.fopm.banning;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 import nz.jovial.fopm.util.FLog;
 import nz.jovial.fopm.util.FUtil;
 import nz.jovial.fopm.util.SQLHandler;
 import org.bukkit.ChatColor;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Date;
+
 
 public class Ban
 {
@@ -44,10 +46,37 @@ public class Ban
     @Getter
     @Setter
     private Date expiry;
+    @Getter
+    @Setter
+    private BanType type;
 
     public String getKickMessage()
     {
-        return ChatColor.RED
+        if (type.equals(BanType.PERMANENT_IP))
+        {
+            return ChatColor.RED
+                    + "Your IP is currently permanently banned from this server.\n"
+                    + "Reason: " + ChatColor.YELLOW + (reason != null ? reason : "N/A") + "\n"
+                    + ChatColor.RED + "By: " + ChatColor.YELLOW + by;
+        }
+        if (type.equals(BanType.PERMANENT_NAME))
+        {
+            return ChatColor.RED
+                    + "Your name is currently permanently banned from this server.\n"
+                    + "Reason: " + ChatColor.YELLOW + (reason != null ? reason : "N/A") + "\n"
+                    + ChatColor.RED + "By: " + ChatColor.YELLOW + by;
+        }
+        if (type.equals(BanType.IP))
+        {
+            return ChatColor.RED
+                    + "Your IP is currently banned from this server.\n"
+                    + "Reason: " + ChatColor.YELLOW + (reason != null ? reason : "N/A") + "\n"
+                    + ChatColor.RED + "By: " + ChatColor.YELLOW + by + "\n"
+                    + ChatColor.RED + "Your ban will expire on "
+                    + ChatColor.YELLOW + FUtil.dateToString(expiry);
+        }
+
+        return ChatColor.RED //normal
                 + "You're currently banned from this server.\n"
                 + "Reason: " + ChatColor.YELLOW + (reason != null ? reason : "N/A") + "\n"
                 + ChatColor.RED + "By: " + ChatColor.YELLOW + by + "\n"
@@ -70,12 +99,13 @@ public class Ban
         Connection c = SQLHandler.getConnection();
         try
         {
-            PreparedStatement statement = c.prepareStatement("INSERT INTO bans (name, ip, by, reason, expiry) VALUES (?, ?, ?, ?, ?)");
+            PreparedStatement statement = c.prepareStatement("INSERT INTO bans (`name`, ip,  `by` , reason, expiry, type) VALUES (?, ?, ?, ?, ?, ?)");
             statement.setString(1, name);
             statement.setString(2, ip);
             statement.setString(3, by);
             statement.setString(4, reason);
             statement.setLong(5, FUtil.getUnixTime(expiry));
+            statement.setString(6, type.toString());
             statement.executeUpdate();
         }
         catch (SQLException ex)

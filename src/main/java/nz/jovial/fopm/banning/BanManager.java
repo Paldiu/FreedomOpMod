@@ -15,13 +15,6 @@
  */
 package nz.jovial.fopm.banning;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import lombok.Getter;
 import nz.jovial.fopm.util.FLog;
 import nz.jovial.fopm.util.FUtil;
@@ -29,11 +22,18 @@ import nz.jovial.fopm.util.SQLHandler;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.*;
+
 public class BanManager
 {
 
     @Getter
     private static List<Ban> bans;
+    @Getter
+    private static HashMap<BanType, List<Ban>> banMap = new HashMap<>();
 
     public BanManager()
     {
@@ -44,47 +44,35 @@ public class BanManager
     public static void loadBans()
     {
         bans.clear();
-        List<String> names = new ArrayList<>();
         Connection c = SQLHandler.getConnection();
 
         try
         {
-            ResultSet result = c.prepareStatement("SELECT name FROM bans").executeQuery();
+            ResultSet result = c.prepareStatement("SELECT * FROM bans").executeQuery();
             if (result.next())
             {
-                names.add(result.getString(1));
+                Ban ban = new Ban();
+                ban.setName(result.getString("name"));
+                ban.setIp(result.getString("ip"));
+                ban.setBy(result.getString("by"));
+                ban.setReason(result.getString("reason"));
+                ban.setExpiry(FUtil.getUnixDate(result.getLong("expiry")));
+                BanType type = BanType.valueOf(result.getString("type"));
+                ban.setType(type);
+                bans.add(ban);
+                if (banMap.containsKey(type))
+                {
+                    List<Ban> typeBans = banMap.get(type);
+                    typeBans.add(ban);
+                    banMap.put(type, typeBans);
+                }
             }
         }
         catch (SQLException ex)
         {
             FLog.severe(ex);
+            return;
         }
-
-        names.forEach((name) ->
-        {
-            Ban ban = new Ban();
-            ban.setName(name);
-
-            try
-            {
-                PreparedStatement statement = c.prepareStatement("SELECT * FROM bans WHERE name = ?");
-                statement.setString(1, name);
-                ResultSet result = statement.executeQuery();
-                if (result.next())
-                {
-                    ban.setIp(result.getString("ip"));
-                    ban.setBy(result.getString("by"));
-                    ban.setReason(result.getString("reason"));
-                    ban.setExpiry(FUtil.getUnixDate(result.getLong("expiry")));
-                }
-            }
-            catch (SQLException ex)
-            {
-                FLog.severe(ex);
-            }
-
-            bans.add(ban);
-        });
 
         removeExpiredBans();
         FLog.info("Successfully loaded " + bans.size() + " bans!");
@@ -92,17 +80,7 @@ public class BanManager
 
     public static void removeExpiredBans()
     {
-        final List<Ban> toUnban = new ArrayList<>();
-
-        bans.stream().filter((ban) -> (ban.isExpired())).forEach((ban) ->
-        {
-            toUnban.add(ban);
-        });
-
-        toUnban.stream().forEach((ban) ->
-        {
-            bans.remove(ban);
-        });
+        bans.stream().filter((ban) -> (ban.isExpired())).forEach(bans::remove);
     }
 
     public static void addBan(Ban ban)
@@ -116,7 +94,7 @@ public class BanManager
         ban.save();
     }
 
-    public static void addBan(CommandSender sender, Player player, String reason, Date date)
+    public static void addBan(CommandSender sender, Player player, String reason, Date date, BanType type)
     {
         if (isBanned(player))
         {
@@ -129,10 +107,11 @@ public class BanManager
         ban.setBy(sender.getName());
         ban.setReason(reason);
         ban.setExpiry(date);
+        ban.setType(type);
         addBan(ban);
     }
 
-    public static void addBan(CommandSender sender, String name, String ip, String reason, Date date)
+    public static void addBan(CommandSender sender, String name, String ip, String reason, Date date, BanType type)
     {
         if (getBan(name) != null)
         {
@@ -145,8 +124,10 @@ public class BanManager
         ban.setBy(sender.getName());
         ban.setReason(reason);
         ban.setExpiry(date);
+        ban.setType(type);
         addBan(ban);
     }
+
 
     public static void removeBan(Ban ban)
     {
@@ -161,24 +142,63 @@ public class BanManager
 
     public static boolean isBanned(Ban ban)
     {
+        removeExpiredBans();
         String name = ban.getName();
         for (Ban b : bans)
         {
-            return b.getName().equalsIgnoreCase(name);
+            return b.getName().equals(name);
         }
         return false;
     }
 
     public static boolean isBanned(Player player)
     {
+        removeExpiredBans();
         return getBan(player) != null;
     }
+
+    public static boolean isIPBanned(String ip)
+    {
+        for (Ban ban : banMap.getOrDefault(BanType.IP, Collections.emptyList()))
+        {
+            if (ban.getIp().equals(ip))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isIPPermBanned(String ip)
+    {
+        for (Ban ban : banMap.getOrDefault(BanType.PERMANENT_IP, Collections.emptyList()))
+        {
+            if (ban.getIp().equals(ip))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isNamePermBanned(String name)
+    {
+        for (Ban ban : banMap.getOrDefault(BanType.PERMANENT_NAME, Collections.emptyList()))
+        {
+            if (ban.getName().equals(name))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public static Ban getBan(String name)
     {
         for (Ban ban : bans)
         {
-            if (ban.getName().equalsIgnoreCase(name))
+            if (ban.getName().equals(name))
             {
                 return ban;
             }
@@ -191,7 +211,7 @@ public class BanManager
     {
         for (Ban ban : bans)
         {
-            if (ban.getName().equalsIgnoreCase(player.getName()))
+            if (ban.getName().equals(player.getName()) || ban.getIp().equals(player.getAddress().getHostString()))
             {
                 return ban;
             }

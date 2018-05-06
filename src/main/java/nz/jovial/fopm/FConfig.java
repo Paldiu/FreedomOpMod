@@ -15,10 +15,11 @@
  */
 package nz.jovial.fopm;
 
-import java.io.File;
-import java.io.IOException;
 import nz.jovial.fopm.util.FLog;
 import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.File;
+import java.io.IOException;
 
 public class FConfig
 {

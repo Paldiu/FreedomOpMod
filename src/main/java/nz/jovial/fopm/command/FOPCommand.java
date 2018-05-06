@@ -15,22 +15,17 @@
  */
 package nz.jovial.fopm.command;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
 import nz.jovial.fopm.FreedomOpMod;
 import nz.jovial.fopm.rank.Rank;
 import nz.jovial.fopm.util.FLog;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandMap;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.PluginCommand;
-import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.command.TabExecutor;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
+
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.List;
 
 public abstract class FOPCommand implements CommandExecutor, TabExecutor
 {

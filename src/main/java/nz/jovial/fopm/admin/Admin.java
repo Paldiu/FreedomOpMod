@@ -15,14 +15,17 @@
  */
 package nz.jovial.fopm.admin;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import lombok.Getter;
 import lombok.Setter;
 import nz.jovial.fopm.rank.Rank;
 import nz.jovial.fopm.util.FLog;
+import nz.jovial.fopm.util.FUtil;
 import nz.jovial.fopm.util.SQLHandler;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
 
 public class Admin
 {
@@ -32,7 +35,7 @@ public class Admin
     private String name;
     @Getter
     @Setter
-    private String ip;
+    private List<String> ips;
     @Getter
     @Setter
     private Rank rank;
@@ -45,9 +48,9 @@ public class Admin
         Connection c = SQLHandler.getConnection();
         try
         {
-            PreparedStatement statement = c.prepareStatement("INSERT INTO admins (name, ip, rank, active) VALUES (?, ?, ?, ?)");
+            PreparedStatement statement = c.prepareStatement("INSERT INTO admins (name, ips, rank, active) VALUES (?, ?, ?, ?)");
             statement.setString(1, name);
-            statement.setString(2, ip);
+            statement.setString(2, FUtil.serializeArray(ips));
             statement.setString(3, rank.name());
             statement.setBoolean(4, active);
             statement.executeUpdate();
@@ -63,8 +66,8 @@ public class Admin
         Connection c = SQLHandler.getConnection();
         try
         {
-            PreparedStatement newip = c.prepareStatement("UPDATE admins SET ip = ?  WHERE name = ?");
-            newip.setString(1, ip);
+            PreparedStatement newip = c.prepareStatement("UPDATE admins SET ips = ?  WHERE name = ?");
+            newip.setString(1, FUtil.serializeArray(ips));
             newip.setString(2, name);
             PreparedStatement newrank = c.prepareStatement("UPDATE admins SET rank = ? WHERE name = ?");
             newrank.setString(1, rank.name());
@@ -102,7 +105,7 @@ public class Admin
     {
         StringBuilder sb = new StringBuilder();
         sb.append(name).append(":\n")
-                .append(" - Ip: ").append(ip).append("\n")
+                .append(" - IP's: ").append(String.join(" , ", ips)).append("\n")
                 .append(" - Rank: ").append(rank.getName()).append("\n")
                 .append(" - Active: ").append(active);
         return sb.toString();

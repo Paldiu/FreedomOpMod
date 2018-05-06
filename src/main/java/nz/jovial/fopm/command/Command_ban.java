@@ -15,14 +15,12 @@
  */
 package nz.jovial.fopm.command;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import nz.jovial.fopm.rank.Rank;
+import nz.jovial.fopm.banning.Ban;
 import nz.jovial.fopm.banning.BanManager;
+import nz.jovial.fopm.banning.BanType;
 import nz.jovial.fopm.bridge.CoreProtectBridge;
 import nz.jovial.fopm.bridge.WorldEditBridge;
+import nz.jovial.fopm.rank.Rank;
 import nz.jovial.fopm.util.FLog;
 import nz.jovial.fopm.util.FUtil;
 import nz.jovial.fopm.util.SQLHandler;
@@ -34,7 +32,15 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-@CommandParameters(description = "Bans a bad player", usage = "/<command> <player> [reason]", source = SourceType.BOTH, rank = Rank.SWING_MANAGER)
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+@CommandParameters(description = "Bans a bad player or IP", usage = "/<command> <player } ip> [reason]", source = SourceType.BOTH, rank = Rank.SWING_MANAGER)
 public class Command_ban
 {
 
@@ -45,8 +51,32 @@ public class Command_ban
             return false;
         }
 
-        OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
         String reason = null;
+        //check if input is IP
+        Pattern pattern = Pattern.compile("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
+        Matcher m = pattern.matcher(args[0]);
+        if (m.matches())
+        {
+            //is ip
+
+            if (BanManager.isIPBanned(args[0]) || BanManager.getBanMap().getOrDefault(BanType.NORMAL, Collections.emptyList()).stream().filter(ban -> ban.getIp().equals(args[0])) != Collections.emptyList())
+            {
+                sender.sendMessage(ChatColor.RED + "That IP is already banned!");
+                return true;
+            }
+            if (args.length > 2)
+            {
+                reason = StringUtils.join(args, " ", 1, args.length);
+            }
+            Bukkit.broadcastMessage(ChatColor.RED + sender.getName() + " - Banning IP: " + args[0]
+                    + (reason != null ? "\n Reason: " + ChatColor.YELLOW + reason : ""));
+            BanManager.addBan(sender, "", args[0], reason, FUtil.stringToDate("1d"), BanType.IP);
+            return true;
+        }
+
+        //not ip
+
+        OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
 
         if (player.isOnline())
         {
@@ -65,11 +95,18 @@ public class Command_ban
 
             Bukkit.broadcastMessage(ChatColor.RED + sender.getName() + " - Banning " + player.getName()
                     + (reason != null ? "\n Reason: " + ChatColor.YELLOW + reason : ""));
-            BanManager.addBan(sender, p, reason, FUtil.stringToDate("1d"));
+            for (Ban ban : BanManager.getBanMap().getOrDefault(BanType.IP, Collections.emptyList()))
+            {
+                if (ban.getIp().equals(p.getAddress().getHostString()))
+                {
+                    BanManager.removeBan(ban);
+                }
+            }
+            BanManager.addBan(sender, p, reason, FUtil.stringToDate("1d"), BanType.NORMAL);
 
             if (CoreProtectBridge.getCoreProtect() == null)
             {
-                sender.sendMessage(ChatColor.RED + "Can not rollback, missing plugin!");
+                sender.sendMessage(ChatColor.RED + "Can't rollback, missing plugin!");
             }
             else
             {
@@ -100,7 +137,7 @@ public class Command_ban
 
         if (ip == null)
         {
-            sender.sendMessage(ChatColor.RED + "Can not ban " + args[0] + "!");
+            sender.sendMessage(ChatColor.DARK_GRAY + "Player not found. ");
             return true;
         }
 
@@ -111,7 +148,14 @@ public class Command_ban
 
         Bukkit.broadcastMessage(ChatColor.RED + sender.getName() + " - Banning " + args[0]
                 + (reason != null ? "\n Reason: " + ChatColor.YELLOW + reason : ""));
-        BanManager.addBan(sender, args[0], ip, reason, FUtil.stringToDate("1d"));
+        BanManager.addBan(sender, args[0], ip, reason, FUtil.stringToDate("1d"), BanType.NORMAL);
+        for (Ban ban : BanManager.getBanMap().getOrDefault(BanType.IP, Collections.emptyList()))
+        {
+            if (ban.getIp().equals(ip))
+            {
+                BanManager.removeBan(ban);
+            }
+        }
         CoreProtectBridge.rollback(args[0]);
 
         return true;

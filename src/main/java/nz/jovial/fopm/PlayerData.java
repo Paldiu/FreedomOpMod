@@ -15,8 +15,6 @@
  */
 package nz.jovial.fopm;
 
-import java.util.HashMap;
-import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Bukkit;
@@ -26,10 +24,36 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class PlayerData
 {
 
     private static final Map<Player, PlayerData> DATA = new HashMap<>();
+    private final Player player;
+    //
+    private BukkitTask muteTask;
+    private BukkitTask frozenTask;
+    @Getter
+    @Setter
+    private String tag = null;
+    @Getter
+    @Setter
+    private boolean inAdminchat = false;
+    @Getter
+    @Setter
+    private boolean isTpToggled = false;
+    @Getter
+    @Setter
+    private Location lastLocation = null;
+    @Getter
+    @Setter
+    private boolean isVanished = false;
+    private PlayerData(Player player)
+    {
+        this.player = player;
+    }
 
     public static boolean hasPlayerData(Player player)
     {
@@ -59,31 +83,6 @@ public class PlayerData
         return data;
     }
 
-    private final Player player;
-    //
-    private BukkitTask muteTask;
-    private BukkitTask frozenTask;
-    @Getter
-    @Setter
-    private String tag = null;
-    @Getter
-    @Setter
-    private boolean inAdminchat = false;
-    @Getter
-    @Setter
-    private boolean isTpToggled = false;
-    @Getter
-    @Setter
-    private Location lastLocation = null;
-    @Getter
-    @Setter
-    private boolean isVanished = false;
-
-    private PlayerData(Player player)
-    {
-        this.player = player;
-    }
-
     public boolean isMuted()
     {
         return muteTask != null;
@@ -110,8 +109,7 @@ public class PlayerData
         }.runTaskLater(FreedomOpMod.plugin, 60L * 20L * 5L);
     }
 
-    
-    
+
     public boolean isFrozen()
     {
         return frozenTask != null;
