@@ -97,7 +97,7 @@ public class BanManager
         }
 
         List<Ban> typeBans = banMap.get(ban.getType());
-        typeBans.add(Ban);
+        typeBans.add(ban);
         banMap.put(ban.getType(), typeBans);
         ban.save();
     }
@@ -145,7 +145,7 @@ public class BanManager
         bans.remove(ban);
         ban.delete();
         List<Ban> typeBans = banMap.get(ban.getType());
-        typeBans.remove(Ban);
+        typeBans.remove(ban);
         banMap.put(ban.getType(), typeBans);
     }
 
