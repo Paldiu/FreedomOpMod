@@ -67,6 +67,11 @@ public class BanManager
                     typeBans.add(ban);
                     banMap.put(type, typeBans);
                 }
+                else
+                {
+                    List<Ban> typeBans = Collections.singletonList(ban);
+                    banMap.put(type, typeBans);
+                }
             }
         }
         catch (SQLException ex)
@@ -86,12 +91,14 @@ public class BanManager
 
     public static void addBan(Ban ban)
     {
-        //if (isBanned(ban))
-        //{
-        //    return;
-        //}
+        if (isBanned(ban))
+        {
+           return;
+        }
 
-        bans.add(ban);
+        List<Ban> typeBans = banMap.get(ban.getType());
+        typeBans.add(Ban);
+        banMap.put(ban.getType(), typeBans);
         ban.save();
     }
 
@@ -131,26 +138,35 @@ public class BanManager
 
     public static void removeBan(Ban ban)
     {
-        //if (!isBanned(ban))
-        //{
-        //    return;
-        //}
-
-        if (ban.getType() == BanType.PERMANENT_IP || ban.getType() == BanType.PERMANENT_NAME)
-        {
-            return;
+         if (!isBanned(ban))
+         {
+          return;
         }
-
         bans.remove(ban);
         ban.delete();
+        List<Ban> typeBans = banMap.get(ban.getType());
+        typeBans.remove(Ban);
+        banMap.put(ban.getType(), typeBans);
     }
+
+    public static boolean isBanned(Ban ban)
+    {
+        removeExpiredBans();
+        for (Ban b : bans)
+        {
+            if(b.getName().equals(ban.getName()) || b.getIp().equals(ban.getIp()))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     public static boolean isBanned(Player player)
     {
-        return isNameBanned(player.getName())
-                || isIPBanned(player.getAddress().getHostString())
-                || isIPPermBanned(player.getAddress().getHostString())
-                || isNamePermBanned(player.getName());
+        removeExpiredBans();
+        return getBan(player) != null;
     }
 
     public static boolean isNameBanned(String name)
