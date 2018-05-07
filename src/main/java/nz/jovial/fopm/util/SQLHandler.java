@@ -15,7 +15,6 @@
  */
 package nz.jovial.fopm.util;
 
-
 import lombok.Getter;
 import nz.jovial.fopm.FreedomOpMod;
 import org.bukkit.entity.Player;
@@ -32,7 +31,6 @@ public class SQLHandler
     public SQLHandler(FreedomOpMod plugin)
     {
         this.plugin = plugin;
-
     }
 
     public static boolean playerExists(Player player)
@@ -96,11 +94,12 @@ public class SQLHandler
         String dbName = plugin.config.getConfig().getString("sql.databaseName");
         String username = plugin.config.getConfig().getString("sql.username");
         String password = plugin.config.getConfig().getString("sql.password");
-        ;
-        if (password == null)
+
+        if (password == null) // Password can't be nulled
         {
             password = "";
-        } // password can be empty in MySQL
+        }
+
         try
         {
             connection = connectToDatabase(hostname, port, dbName, username, password);
@@ -113,6 +112,7 @@ public class SQLHandler
             return false;
         }
     }
+
 
     private Connection connectToDatabase(String hostname, int port, String databaseName, String username, String password) throws SQLException, ClassNotFoundException, InstantiationException, IllegalAccessException
     {
@@ -128,7 +128,7 @@ public class SQLHandler
         String admins = "CREATE TABLE IF NOT EXISTS admins ("
                 + "name VARCHAR(64) PRIMARY KEY,"
                 + "ips VARCHAR(255) NOT NULL,"
-                + "rank VARCHAR(64) NOT NULL," // not SET in case of adding extra ranks
+                + "rank VARCHAR(64) NOT NULL,"
                 + "active BOOLEAN NOT NULL"
                 + ")";
         String players = "CREATE TABLE IF NOT EXISTS players ("
@@ -141,7 +141,7 @@ public class SQLHandler
                 + "`by` TEXT NOT NULL,"
                 + "reason TEXT,"
                 + "expiry LONG NOT NULL,"
-                + "type SET('PERMANENT_IP', 'PERMANENT_NAME', 'PERMANENT', 'NAME', 'IP', 'NORMAL') NOT NULL"
+                + "type SET('PERMANENT_IP', 'PERMANENT_NAME', 'NAME', 'IP', 'NORMAL') NOT NULL"
                 + ")";
 
         c.prepareStatement(admins).executeUpdate();
@@ -149,4 +149,3 @@ public class SQLHandler
         c.prepareStatement(bans).executeUpdate();
     }
 }
-

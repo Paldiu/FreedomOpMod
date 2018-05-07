@@ -49,7 +49,7 @@ public class BanManager
         try
         {
             ResultSet result = c.prepareStatement("SELECT * FROM bans").executeQuery();
-            if (result.next())
+            while (result.next())
             {
                 Ban ban = new Ban();
                 ban.setName(result.getString("name"));
@@ -60,6 +60,7 @@ public class BanManager
                 BanType type = BanType.valueOf(result.getString("type"));
                 ban.setType(type);
                 bans.add(ban);
+
                 if (banMap.containsKey(type))
                 {
                     List<Ban> typeBans = banMap.get(type);
@@ -85,10 +86,10 @@ public class BanManager
 
     public static void addBan(Ban ban)
     {
-        if (isBanned(ban))
-        {
-            return;
-        }
+        //if (isBanned(ban))
+        //{
+        //    return;
+        //}
 
         bans.add(ban);
         ban.save();
@@ -128,10 +129,14 @@ public class BanManager
         addBan(ban);
     }
 
-
     public static void removeBan(Ban ban)
     {
-        if (!isBanned(ban))
+        //if (!isBanned(ban))
+        //{
+        //    return;
+        //}
+
+        if (ban.getType() == BanType.PERMANENT_IP || ban.getType() == BanType.PERMANENT_NAME)
         {
             return;
         }
@@ -140,59 +145,34 @@ public class BanManager
         ban.delete();
     }
 
-    public static boolean isBanned(Ban ban)
-    {
-        removeExpiredBans();
-        String name = ban.getName();
-        for (Ban b : bans)
-        {
-            return b.getName().equals(name);
-        }
-        return false;
-    }
-
     public static boolean isBanned(Player player)
     {
-        removeExpiredBans();
-        return getBan(player) != null;
+        return isNameBanned(player.getName())
+                || isIPBanned(player.getAddress().getHostString())
+                || isIPPermBanned(player.getAddress().getHostString())
+                || isNamePermBanned(player.getName());
+    }
+
+    public static boolean isNameBanned(String name)
+    {
+        return banMap.getOrDefault(BanType.NORMAL, Collections.emptyList()).stream().anyMatch((ban) -> (ban.getName().equalsIgnoreCase(name)));
     }
 
     public static boolean isIPBanned(String ip)
     {
-        for (Ban ban : banMap.getOrDefault(BanType.IP, Collections.emptyList()))
-        {
-            if (ban.getIp().equals(ip))
-            {
-                return true;
-            }
-        }
-        return false;
+        return banMap.getOrDefault(BanType.IP, Collections.emptyList()).stream().anyMatch((ban) -> (ban.getIp().equals(ip)))
+                || banMap.getOrDefault(BanType.NORMAL, Collections.emptyList()).stream().anyMatch((ban) -> (ban.getIp().equals(ip)));
     }
 
     public static boolean isIPPermBanned(String ip)
     {
-        for (Ban ban : banMap.getOrDefault(BanType.PERMANENT_IP, Collections.emptyList()))
-        {
-            if (ban.getIp().equals(ip))
-            {
-                return true;
-            }
-        }
-        return false;
+        return banMap.getOrDefault(BanType.PERMANENT_IP, Collections.emptyList()).stream().anyMatch((ban) -> (ban.getIp().equals(ip)));
     }
 
     public static boolean isNamePermBanned(String name)
     {
-        for (Ban ban : banMap.getOrDefault(BanType.PERMANENT_NAME, Collections.emptyList()))
-        {
-            if (ban.getName().equals(name))
-            {
-                return true;
-            }
-        }
-        return false;
+        return banMap.getOrDefault(BanType.PERMANENT_NAME, Collections.emptyList()).stream().anyMatch((ban) -> (ban.getName().equals(name)));
     }
-
 
     public static Ban getBan(String name)
     {

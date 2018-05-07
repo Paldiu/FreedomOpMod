@@ -58,12 +58,14 @@ public class FreedomOpMod extends JavaPlugin
         config.loadConfig();
 
         sqlh = new SQLHandler(plugin);
+
         if (!sqlh.init())
         {
             FLog.severe("SQL has failed to connect. The plugin is disabling..");
             Bukkit.getPluginManager().disablePlugin(this);
             return;
         }
+
         cl = new CommandLoader();
         al = new AdminList();
         bm = new BanManager();
@@ -83,6 +85,7 @@ public class FreedomOpMod extends JavaPlugin
 
         wm.saveWorlds();
         config.saveConfig();
+
         try
         {
             SQLHandler.getConnection().commit();

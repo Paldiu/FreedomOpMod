@@ -90,19 +90,19 @@ public class PlayerListener implements Listener
         final Player player = event.getPlayer();
         Ban ban = BanManager.getBan(player);
 
+        PlayerData data = PlayerData.getPlayerData(player);
+        data.setLastLocation(player.getLocation().clone());
+
         if (BanManager.isBanned(player) && !ban.isExpired())
         {
-            //Why wasn't this here before?
             if (AdminList.isAdmin(player))
             {
                 event.allow();
+                return;
             }
 
             event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ban.getKickMessage());
         }
-
-        PlayerData data = PlayerData.getPlayerData(player);
-        data.setLastLocation(player.getLocation().clone());
     }
 
     @EventHandler

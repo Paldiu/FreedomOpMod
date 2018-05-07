@@ -57,17 +57,17 @@ public class Command_ban
         Matcher m = pattern.matcher(args[0]);
         if (m.matches())
         {
-            //is ip
-
-            if (BanManager.isIPBanned(args[0]) || BanManager.getBanMap().getOrDefault(BanType.NORMAL, Collections.emptyList()).stream().filter(ban -> ban.getIp().equals(args[0])) != Collections.emptyList())
+            if (BanManager.isIPBanned(args[0]))
             {
                 sender.sendMessage(ChatColor.RED + "That IP is already banned!");
                 return true;
             }
+
             if (args.length > 2)
             {
                 reason = StringUtils.join(args, " ", 1, args.length);
             }
+
             Bukkit.broadcastMessage(ChatColor.RED + sender.getName() + " - Banning IP: " + args[0]
                     + (reason != null ? "\n Reason: " + ChatColor.YELLOW + reason : ""));
             BanManager.addBan(sender, "", args[0], reason, FUtil.stringToDate("1d"), BanType.IP);
@@ -75,7 +75,6 @@ public class Command_ban
         }
 
         //not ip
-
         OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
 
         if (player.isOnline())
@@ -95,13 +94,12 @@ public class Command_ban
 
             Bukkit.broadcastMessage(ChatColor.RED + sender.getName() + " - Banning " + player.getName()
                     + (reason != null ? "\n Reason: " + ChatColor.YELLOW + reason : ""));
-            for (Ban ban : BanManager.getBanMap().getOrDefault(BanType.IP, Collections.emptyList()))
+
+            BanManager.getBanMap().getOrDefault(BanType.IP, Collections.emptyList()).stream().filter((ban) -> (ban.getIp().equals(p.getAddress().getHostString()))).forEachOrdered((ban) ->
             {
-                if (ban.getIp().equals(p.getAddress().getHostString()))
-                {
-                    BanManager.removeBan(ban);
-                }
-            }
+                BanManager.removeBan(ban);
+            });
+
             BanManager.addBan(sender, p, reason, FUtil.stringToDate("1d"), BanType.NORMAL);
 
             if (CoreProtectBridge.getCoreProtect() == null)
@@ -137,7 +135,7 @@ public class Command_ban
 
         if (ip == null)
         {
-            sender.sendMessage(ChatColor.DARK_GRAY + "Player not found. ");
+            sender.sendMessage(ChatColor.GRAY + "Can not find that player! Make sure you provide a correct name (case sensitive).");
             return true;
         }
 
@@ -148,7 +146,9 @@ public class Command_ban
 
         Bukkit.broadcastMessage(ChatColor.RED + sender.getName() + " - Banning " + args[0]
                 + (reason != null ? "\n Reason: " + ChatColor.YELLOW + reason : ""));
+
         BanManager.addBan(sender, args[0], ip, reason, FUtil.stringToDate("1d"), BanType.NORMAL);
+
         for (Ban ban : BanManager.getBanMap().getOrDefault(BanType.IP, Collections.emptyList()))
         {
             if (ban.getIp().equals(ip))
@@ -156,7 +156,15 @@ public class Command_ban
                 BanManager.removeBan(ban);
             }
         }
-        CoreProtectBridge.rollback(args[0]);
+
+        if (CoreProtectBridge.getCoreProtect() == null)
+        {
+            sender.sendMessage(ChatColor.RED + "Can't rollback, missing plugin!");
+        }
+        else
+        {
+            CoreProtectBridge.rollback(args[0]);
+        }
 
         return true;
     }

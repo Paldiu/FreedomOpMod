@@ -1,7 +1,17 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * Copyright 2018 FreedomOp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package nz.jovial.fopm.command;
 
@@ -13,7 +23,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +33,6 @@ public class Command_list
 
     public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args)
     {
-
 
         final ListFilter filter;
         if (args.length == 1)
@@ -50,7 +58,6 @@ public class Command_list
             filter = ListFilter.PLAYERS;
         }
 
-
         final StringBuilder stats = new StringBuilder();
         final StringBuilder players = new StringBuilder();
 
@@ -61,18 +68,13 @@ public class Command_list
         final List<String> names = new ArrayList<>();
         Bukkit.getOnlinePlayers().forEach((player) ->
         {
-            PlayerData data = PlayerData.getPlayerData(player);
-            String tag = ChatColor.stripColor(data.getTag());
+            String tag = Rank.getRank(player).getTag();
             if (!(filter == ListFilter.ADMINS && !AdminList.isAdmin(player)))
             {
                 if (!(filter == ListFilter.IMPOSTORS && !AdminList.isImposter(player)))
                 {
-                    if (!(filter == ListFilter.VANISHED && !data.isVanished()))
+                    if (!(filter == ListFilter.VANISHED && !PlayerData.getPlayerData(player).isVanished()))
                     {
-                        if (tag == null)
-                        {
-                            tag = ChatColor.DARK_GRAY + "[" + ChatColor.RED + "OP" + ChatColor.DARK_GRAY + "]";
-                        }
                         names.add(tag + player.getName());
                     }
                 }
@@ -85,16 +87,8 @@ public class Command_list
         players.append(playerType).append(": ");
         players.append(StringUtils.join(names, ChatColor.WHITE + ", "));
 
-        if (sender instanceof Player)
-        {
-            sender.sendMessage(ChatColor.stripColor(stats.toString()));
-            sender.sendMessage(ChatColor.stripColor(players.toString()));
-        }
-        else
-        {
-            sender.sendMessage(stats.toString());
-            sender.sendMessage(players.toString());
-        }
+        sender.sendMessage(stats.toString());
+        sender.sendMessage(players.toString());
 
         return true;
     }

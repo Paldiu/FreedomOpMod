@@ -40,7 +40,6 @@ public class WorldManager
 
     public static void setSpawn(Player p)
     {
-
         spawnLocationX = p.getLocation().getBlockX();
         spawnLocationY = p.getLocation().getBlockY();
         spawnLocationZ = p.getLocation().getBlockZ();
@@ -57,7 +56,6 @@ public class WorldManager
         World w = spawnLocation;
         Location finalLoc = w.getBlockAt(spawnLocationX, spawnLocationY, spawnLocationZ).getLocation();
         p.teleport(finalLoc);
-
     }
 
     public void loadWorlds()

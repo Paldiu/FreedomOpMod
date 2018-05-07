@@ -16,6 +16,7 @@
 package nz.jovial.fopm.listener;
 
 import nz.jovial.fopm.FreedomOpMod;
+import nz.jovial.fopm.banning.BanManager;
 import nz.jovial.fopm.util.FUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -46,7 +47,8 @@ public class ServerListener implements Listener
             return;
         }
 
-        String motd = FUtil.colorize(FreedomOpMod.plugin.config.getConfig().getString("general.motd").replace("||", "\n"));
+        String motd = FUtil.colorize(FreedomOpMod.plugin.config.getConfig().getString("general.motd"));
+        motd = motd.replace("||", "\n");
         event.setMotd(motd);
     }
 }

@@ -27,7 +27,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Date;
 
-
 public class Ban
 {
 
@@ -99,7 +98,7 @@ public class Ban
         Connection c = SQLHandler.getConnection();
         try
         {
-            PreparedStatement statement = c.prepareStatement("INSERT INTO bans (`name`, ip,  `by` , reason, expiry, type) VALUES (?, ?, ?, ?, ?, ?)");
+            PreparedStatement statement = c.prepareStatement("INSERT INTO bans (name, ip,  `by`, reason, expiry, type) VALUES (?, ?, ?, ?, ?, ?)");
             statement.setString(1, name);
             statement.setString(2, ip);
             statement.setString(3, by);

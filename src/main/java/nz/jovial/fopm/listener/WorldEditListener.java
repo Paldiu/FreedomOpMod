@@ -16,7 +16,6 @@
 package nz.jovial.fopm.listener;
 
 // Temporary fix
-
 import me.StevenLawson.worldedit.LimitChangedEvent;
 import nz.jovial.fopm.FreedomOpMod;
 import nz.jovial.fopm.admin.AdminList;
@@ -27,7 +26,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 //
-
 public class WorldEditListener implements Listener
 {
 

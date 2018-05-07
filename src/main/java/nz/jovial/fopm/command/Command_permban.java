@@ -26,7 +26,7 @@ import org.bukkit.command.CommandSender;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@CommandParameters(description = "Permanently ban a username or IP", usage = "/<command> <username } ip> [reason]", source = SourceType.BOTH, rank = Rank.OFFICER)
+@CommandParameters(description = "Permanently ban a username or IP", usage = "/<command> <username | ip> [reason]", source = SourceType.BOTH, rank = Rank.OFFICER)
 public class Command_permban
 {
 
@@ -42,28 +42,32 @@ public class Command_permban
         {
             reason = StringUtils.join(args, " ", 1, args.length);
         }
+
         //check if input is IP
         Pattern patt = Pattern.compile("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
         Matcher m = patt.matcher(args[0]);
+
         if (m.matches())
         {
-            //is ip
+            // check if the ip is banned
             if (BanManager.isIPPermBanned(args[0]))
             {
                 sender.sendMessage(ChatColor.RED + "That IP is already permanently banned!");
                 return true;
             }
+
             BanManager.addBan(sender, "", args[0], reason, null, BanType.PERMANENT_IP);
             sender.sendMessage(ChatColor.GREEN + "Added permanent ban for IP " + args[0]);
             return true;
         }
 
-        //not ip
+        // ban name
         if (BanManager.isNamePermBanned(args[0]))
         {
             sender.sendMessage(ChatColor.RED + "That name is already permanently banned!");
             return true;
         }
+
         BanManager.addBan(sender, args[0], null, reason, null, BanType.PERMANENT_NAME);
         sender.sendMessage(ChatColor.GREEN + "Added permanent ban for name " + args[0]);
         return true;

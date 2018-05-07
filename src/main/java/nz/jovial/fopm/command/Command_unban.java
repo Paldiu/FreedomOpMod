@@ -41,12 +41,12 @@ public class Command_unban
 
         String target = args[0];
 
-        //name bans
+        // normal bans
         for (Ban ban : BanManager.getBanMap().getOrDefault(BanType.NORMAL, Collections.emptyList()))
         {
-            if (ban.getName().equals(target))
+            if (ban.getName().equals(target) || ban.getIp().equals(target))
             {
-                Bukkit.broadcastMessage(ChatColor.GREEN + sender.getName() + " - Unbanning " + target);
+                Bukkit.broadcastMessage(ChatColor.GREEN + sender.getName() + " - Unbanning " + ban.getName());
                 BanManager.removeBan(ban);
                 return true;
             }
@@ -62,21 +62,10 @@ public class Command_unban
                 return true;
             }
         }
-        //normal ban contains ip
-        for (Ban ban : BanManager.getBanMap().getOrDefault(BanType.NORMAL, Collections.emptyList()))
-        {
-            if (ban.getIp().equals(target))
-            {
-                Bukkit.broadcastMessage(ChatColor.GREEN + sender.getName() + " - Unbanning IP: " + target);
-                BanManager.removeBan(ban);
-                return true;
-            }
-        }
 
         Pattern patt = Pattern.compile("^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$");
         Matcher m = patt.matcher(args[0]);
         sender.sendMessage(m.matches() ? ChatColor.DARK_GRAY + "IP is not banned." : ChatColor.DARK_GRAY + "Player is not banned.");
-
         return true;
     }
 }

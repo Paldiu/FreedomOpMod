@@ -50,6 +50,7 @@ public class PlayerData
     @Getter
     @Setter
     private boolean isVanished = false;
+
     private PlayerData(Player player)
     {
         this.player = player;
@@ -108,7 +109,6 @@ public class PlayerData
             }
         }.runTaskLater(FreedomOpMod.plugin, 60L * 20L * 5L);
     }
-
 
     public boolean isFrozen()
     {

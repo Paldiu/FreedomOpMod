@@ -30,7 +30,6 @@ public class Command_adminchat
     public boolean onCommand(CommandSender sender, Command cmd, String string, String[] args)
     {
 
-
         if (args.length < 1)
         {
             if (!(sender instanceof Player))

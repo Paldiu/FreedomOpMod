@@ -1,9 +1,18 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package nz.jovial.fopm.command;
+ * Copyright 2018 FreedomOp.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */package nz.jovial.fopm.command;
 
 import nz.jovial.fopm.PlayerData;
 import nz.jovial.fopm.rank.Rank;
@@ -17,11 +26,11 @@ import org.bukkit.entity.Player;
 @CommandParameters(description = "Tp to a player.", usage = "/<command> <player>", source = SourceType.IN_GAME, rank = Rank.OP)
 public class Command_tp
 {
+
     public boolean onCommand(CommandSender sender, Command cmd, String lbl, String[] args)
     {
-        Player p = (Player) sender;
 
-        if ((args.length < 1) || (args.length > 1))
+        if (args.length < 1 || args.length > 1)
         {
             return false;
         }
@@ -29,23 +38,20 @@ public class Command_tp
         Player t = Bukkit.getPlayer(args[0]);
         if (t == null)
         {
-            p.sendMessage(ChatColor.YELLOW + "That player is not online!");
+            sender.sendMessage(ChatColor.RED + "That player is not online!");
             return true;
         }
 
         PlayerData data = PlayerData.getPlayerData(t);
-        boolean isTpToggled = data.isTpToggled();
 
-        if (isTpToggled)
+        if (data.isTpToggled())
         {
-            p.sendMessage(ChatColor.RED + "ERROR: This player has teleportation disabled.");
+            sender.sendMessage(ChatColor.RED + "This player has teleportation disabled.");
             return true;
         }
 
-        p.sendMessage(ChatColor.GRAY + "Teleporting...");
-        Location l = t.getLocation();
-        p.teleport(l);
-
+        sender.sendMessage(ChatColor.GRAY + "Teleporting...");
+        ((Player) sender).teleport(t.getLocation());
         return true;
     }
 }
