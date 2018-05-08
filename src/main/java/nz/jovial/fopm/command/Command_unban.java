@@ -42,7 +42,7 @@ public class Command_unban
         String target = args[0];
 
         // normal bans
-        for (Ban ban : BanManager.getBanMap().getOrDefault(BanType.NORMAL, Collections.emptyList()))
+        for (Ban ban : BanManager.getBansByType(BanType.NORMAL))
         {
             if (ban.getName().equals(target) || ban.getIp().equals(target))
             {
@@ -53,7 +53,7 @@ public class Command_unban
         }
 
         //ip bans
-        for (Ban ban : BanManager.getBanMap().getOrDefault(BanType.IP, Collections.emptyList()))
+        for (Ban ban : BanManager.getBansByType(BanType.IP))
         {
             if (ban.getIp().equals(target))
             {

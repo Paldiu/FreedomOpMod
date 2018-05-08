@@ -25,20 +25,19 @@ import org.bukkit.entity.Player;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 public class BanManager
 {
 
     @Getter
     private static List<Ban> bans;
-    @Getter
-    private static HashMap<BanType, List<Ban>> banMap = new HashMap<>();
 
     public BanManager()
     {
         bans = new ArrayList<>();
-        loadBans();
     }
 
     public static void loadBans()
@@ -60,18 +59,6 @@ public class BanManager
                 BanType type = BanType.valueOf(result.getString("type"));
                 ban.setType(type);
                 bans.add(ban);
-
-                if (banMap.containsKey(type))
-                {
-                    List<Ban> typeBans = banMap.get(type);
-                    typeBans.add(ban);
-                    banMap.put(type, typeBans);
-                }
-                else
-                {
-                    List<Ban> typeBans = Collections.singletonList(ban);
-                    banMap.put(type, typeBans);
-                }
             }
         }
         catch (SQLException ex)
@@ -93,12 +80,10 @@ public class BanManager
     {
         if (isBanned(ban))
         {
-           return;
+            return;
         }
 
-        List<Ban> typeBans = banMap.get(ban.getType());
-        typeBans.add(ban);
-        banMap.put(ban.getType(), typeBans);
+        bans.add(ban);
         ban.save();
     }
 
@@ -138,15 +123,13 @@ public class BanManager
 
     public static void removeBan(Ban ban)
     {
-         if (!isBanned(ban))
-         {
-          return;
+        if (!isBanned(ban))
+        {
+            return;
         }
+
         bans.remove(ban);
         ban.delete();
-        List<Ban> typeBans = banMap.get(ban.getType());
-        typeBans.remove(ban);
-        banMap.put(ban.getType(), typeBans);
     }
 
     public static boolean isBanned(Ban ban)
@@ -154,7 +137,7 @@ public class BanManager
         removeExpiredBans();
         for (Ban b : bans)
         {
-            if(b.getName().equals(ban.getName()) || b.getIp().equals(ban.getIp()))
+            if (b.getName().equals(ban.getName()) || b.getIp().equals(ban.getIp()))
             {
                 return true;
             }
@@ -162,45 +145,26 @@ public class BanManager
         return false;
     }
 
-
     public static boolean isBanned(Player player)
     {
         removeExpiredBans();
         return getBan(player) != null;
     }
 
-    public static boolean isNameBanned(String name)
-    {
-        return banMap.getOrDefault(BanType.NORMAL, Collections.emptyList()).stream().anyMatch((ban) -> (ban.getName().equalsIgnoreCase(name)));
-    }
-
     public static boolean isIPBanned(String ip)
     {
-        return banMap.getOrDefault(BanType.IP, Collections.emptyList()).stream().anyMatch((ban) -> (ban.getIp().equals(ip)))
-                || banMap.getOrDefault(BanType.NORMAL, Collections.emptyList()).stream().anyMatch((ban) -> (ban.getIp().equals(ip)));
+        return getBansByType(BanType.IP).stream().anyMatch((ban) -> (ban.getIp().equals(ip)))
+                || getBansByType(BanType.NORMAL).stream().anyMatch((ban) -> (ban.getIp().equals(ip)));
     }
 
     public static boolean isIPPermBanned(String ip)
     {
-        return banMap.getOrDefault(BanType.PERMANENT_IP, Collections.emptyList()).stream().anyMatch((ban) -> (ban.getIp().equals(ip)));
+        return getBansByType(BanType.PERMANENT_IP).stream().anyMatch((ban) -> (ban.getIp().equals(ip)));
     }
 
     public static boolean isNamePermBanned(String name)
     {
-        return banMap.getOrDefault(BanType.PERMANENT_NAME, Collections.emptyList()).stream().anyMatch((ban) -> (ban.getName().equals(name)));
-    }
-
-    public static Ban getBan(String name)
-    {
-        for (Ban ban : bans)
-        {
-            if (ban.getName().equals(name))
-            {
-                return ban;
-            }
-        }
-
-        return null;
+        return getBansByType(BanType.PERMANENT_NAME).stream().anyMatch((ban) -> (ban.getName().equals(name)));
     }
 
     public static Ban getBan(Player player)
@@ -213,5 +177,32 @@ public class BanManager
             }
         }
         return null;
+    }
+
+    public static Ban getBan(String name)
+    {
+        for (Ban ban : bans)
+        {
+            if (ban.getName().equals(name))
+            {
+                return ban;
+            }
+        }
+        return null;
+    }
+
+    public static List<Ban> getBansByType(BanType type)
+    {
+        List<Ban> banType = new ArrayList<>();
+
+        for (Ban ban : bans)
+        {
+            if (ban.getType().equals(type))
+            {
+                banType.add(ban);
+            }
+        }
+
+        return banType;
     }
 }

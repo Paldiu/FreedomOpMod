@@ -23,7 +23,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,7 +42,7 @@ public class Command_unpermban
         Matcher m = patt.matcher(args[0]);
         if (m.matches())
         {
-            for (Ban ban : BanManager.getBanMap().getOrDefault(BanType.PERMANENT_IP, Collections.emptyList()))
+            for (Ban ban : BanManager.getBansByType(BanType.PERMANENT_IP))
             {
                 if (ban.getIp().equals(args[0]))
                 {
@@ -52,13 +51,14 @@ public class Command_unpermban
                     return true;
                 }
             }
+
             sender.sendMessage(ChatColor.RED + "That IP is not permanently banned!");
             return true;
         }
 
-        for (Ban ban : BanManager.getBanMap().getOrDefault(BanType.PERMANENT_NAME, Collections.emptyList()))
+        for (Ban ban : BanManager.getBansByType(BanType.PERMANENT_NAME))
         {
-            if (ban.getIp().equals(args[0]))
+            if (ban.getName().equals(args[0]))
             {
                 BanManager.removeBan(ban);
                 sender.sendMessage(ChatColor.GREEN + "Removed permanent ban for name " + args[0]);

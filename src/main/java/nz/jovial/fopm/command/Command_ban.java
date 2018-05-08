@@ -36,7 +36,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -95,7 +94,7 @@ public class Command_ban
             Bukkit.broadcastMessage(ChatColor.RED + sender.getName() + " - Banning " + player.getName()
                     + (reason != null ? "\n Reason: " + ChatColor.YELLOW + reason : ""));
 
-            BanManager.getBanMap().getOrDefault(BanType.IP, Collections.emptyList()).stream().filter((ban) -> (ban.getIp().equals(p.getAddress().getHostString()))).forEachOrdered((ban) ->
+            BanManager.getBansByType(BanType.IP).stream().filter((ban) -> (ban.getIp().equals(p.getAddress().getHostString()))).forEachOrdered((ban) ->
             {
                 BanManager.removeBan(ban);
             });
@@ -149,7 +148,7 @@ public class Command_ban
 
         BanManager.addBan(sender, args[0], ip, reason, FUtil.stringToDate("1d"), BanType.NORMAL);
 
-        for (Ban ban : BanManager.getBanMap().getOrDefault(BanType.IP, Collections.emptyList()))
+        for (Ban ban : BanManager.getBansByType(BanType.IP))
         {
             if (ban.getIp().equals(ip))
             {
