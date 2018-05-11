@@ -17,6 +17,7 @@ package nz.jovial.fopm.rank;
 
 import lombok.Getter;
 import nz.jovial.fopm.admin.AdminList;
+import nz.jovial.fopm.util.FUtil;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -78,7 +79,7 @@ public enum Rank
 
     public static Rank getRank(CommandSender sender)
     {
-        if (sender instanceof Player)
+        if (!FUtil.isConsole())
         {
             return getRank((Player) sender);
         }

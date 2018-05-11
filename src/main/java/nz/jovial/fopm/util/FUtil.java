@@ -22,12 +22,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import lombok.Getter;
+import lombok.Setter;
 
 public class FUtil
 {
@@ -49,14 +50,16 @@ public class FUtil
     public static String DATE_STORAGE_FORMAT = "EEE, d MMM yyyy HH:mm:ss Z";
     protected static ArrayList<Player> tpToggledOff = new ArrayList<>();
     protected static ArrayList<Player> inAdminChat = new ArrayList<>();
+    @Setter
+    @Getter
+    public static boolean isConsole = true;
 
     public static void adminChatMsg(CommandSender p, String msg)
     {
         //added a console log for adminchat
-        FLog.info("[ADMIN] " + p.getName() + " " + Rank.getRank(p).getTag() + ": " + msg);
+        FLog.info(ChatColor.stripColor("[ADMIN] " + p.getName() + " " + Rank.getRank(p).getTag() + ": " + msg));
 
-        Bukkit.getOnlinePlayers().forEach((player) ->
-        {
+        Bukkit.getOnlinePlayers().forEach((Player player) -> {
             if (AdminList.isAdmin(player))
             {
                 player.sendMessage(ChatColor.DARK_GRAY + "[" + ChatColor.WHITE + "ADMIN" + ChatColor.DARK_GRAY + "] "

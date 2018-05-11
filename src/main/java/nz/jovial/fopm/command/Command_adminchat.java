@@ -32,7 +32,7 @@ public class Command_adminchat
 
         if (args.length < 1)
         {
-            if (!(sender instanceof Player))
+            if (FUtil.isConsole())
             {
                 sender.sendMessage("Only in game players can toggle adminchat.");
                 return true;

@@ -34,8 +34,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.*;
+import org.bukkit.event.server.ServerCommandEvent;
 
 import java.lang.reflect.Field;
+import org.bukkit.command.CommandSender;
 
 public class PlayerListener implements Listener
 {
@@ -186,7 +188,8 @@ public class PlayerListener implements Listener
     {
         final Player player = event.getPlayer();
         YamlConfiguration config = plugin.config.getConfig();
-
+        FUtil.setConsole(false);
+        
         for (String blocked : config.getStringList("commands.default")) {
             if (event.getMessage().equalsIgnoreCase(blocked) || event.getMessage().split(" ")[0].equalsIgnoreCase(blocked))
             {

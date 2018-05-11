@@ -20,8 +20,11 @@ import nz.jovial.fopm.banning.BanManager;
 import nz.jovial.fopm.util.FUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 
 public class ServerListener implements Listener
@@ -50,5 +53,14 @@ public class ServerListener implements Listener
         String motd = FUtil.colorize(FreedomOpMod.plugin.config.getConfig().getString("general.motd"));
         motd = motd.replace("||", "\n");
         event.setMotd(motd);
+    }
+    
+    //THIS IS NEEDED
+    @EventHandler
+    public void checkForConsole(ServerCommandEvent event) {
+        CommandSender sender = event.getSender();
+        if (!(sender instanceof Player)) {
+            FUtil.setConsole(true);
+        }
     }
 }

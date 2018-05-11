@@ -26,6 +26,9 @@ import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.List;
+import nz.jovial.fopm.util.FLog;
+import nz.jovial.fopm.util.FUtil;
+import org.bukkit.entity.Player;
 
 @CommandParameters(description = "See who's online.", usage = "/<command> [-a | -i | -v]", aliases = "who", source = SourceType.BOTH, rank = Rank.NON_OP)
 public class Command_list
@@ -87,6 +90,12 @@ public class Command_list
         players.append(playerType).append(": ");
         players.append(StringUtils.join(names, ChatColor.WHITE + ", "));
 
+        if (FUtil.isConsole()) {
+            FLog.info(ChatColor.stripColor(stats.toString()));
+            FLog.info(ChatColor.stripColor(players.toString()));
+            return true;
+        }
+        
         sender.sendMessage(stats.toString());
         sender.sendMessage(players.toString());
 

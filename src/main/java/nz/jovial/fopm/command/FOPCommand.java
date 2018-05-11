@@ -26,6 +26,7 @@ import org.bukkit.entity.Player;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
+import nz.jovial.fopm.util.FUtil;
 
 public abstract class FOPCommand implements CommandExecutor, TabExecutor
 {
@@ -162,13 +163,13 @@ public abstract class FOPCommand implements CommandExecutor, TabExecutor
         {
             if (cmd != null)
             {
-                if (sender instanceof Player && source == SourceType.CONSOLE)
+                if (!FUtil.isConsole() && source == SourceType.CONSOLE)
                 {
                     sender.sendMessage("You must be on console to execute this command!");
                     return true;
                 }
 
-                if (!(sender instanceof Player) && source == SourceType.IN_GAME)
+                if (FUtil.isConsole() && source == SourceType.IN_GAME)
                 {
                     sender.sendMessage("You must be in game to execute this command!");
                     return true;

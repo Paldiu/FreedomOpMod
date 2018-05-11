@@ -17,6 +17,7 @@ package nz.jovial.fopm.command;
 
 import nz.jovial.fopm.admin.AdminList;
 import nz.jovial.fopm.rank.Rank;
+import nz.jovial.fopm.util.FUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -46,7 +47,7 @@ public class Command_admin
                         return true;
                     }
 
-                    if (sender instanceof Player)
+                    if (!FUtil.isConsole())
                     {
                         sender.sendMessage(ChatColor.RED + "You must be on console to be able to execute this command!");
                         return true;
@@ -86,7 +87,7 @@ public class Command_admin
                         return true;
                     }
 
-                    if (sender instanceof Player)
+                    if (!FUtil.isConsole())
                     {
                         sender.sendMessage(ChatColor.RED + "You must be on console to be able to execute this command!");
                         return true;
@@ -139,7 +140,7 @@ public class Command_admin
                         return true;
                     }
 
-                    if (sender instanceof Player)
+                    if (!FUtil.isConsole())
                     {
                         sender.sendMessage(ChatColor.RED + "You must be on console to be able to execute this command!");
                         return true;

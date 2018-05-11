@@ -17,6 +17,7 @@ package nz.jovial.fopm.command;
 
 import nz.jovial.fopm.admin.AdminList;
 import nz.jovial.fopm.rank.Rank;
+import nz.jovial.fopm.util.FUtil;
 import nz.jovial.fopm.world.WorldManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -48,7 +49,7 @@ public class Command_spawn
             WorldManager.tpToSpawn(t);
         }
 
-        if (!(sender instanceof Player))
+        if (FUtil.isConsole())
         {
             sender.sendMessage("Please specify a player to spawn.");
             return true;
