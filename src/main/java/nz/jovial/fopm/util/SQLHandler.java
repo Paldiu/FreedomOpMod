@@ -141,7 +141,7 @@ public class SQLHandler
                 + "`by` TEXT NOT NULL,"
                 + "reason TEXT,"
                 + "expiry LONG NOT NULL,"
-                + "type SET('PERMANENT_IP', 'PERMANENT_NAME', 'NAME', 'IP', 'NORMAL') NOT NULL"
+                + "type SET('PERMANENT_NAME', 'NAME', 'IP', 'NORMAL') NOT NULL"
                 + ")";
 
         c.prepareStatement(admins).executeUpdate();

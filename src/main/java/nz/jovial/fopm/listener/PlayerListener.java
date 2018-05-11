@@ -88,12 +88,12 @@ public class PlayerListener implements Listener
     public void onPlayerLogin(PlayerLoginEvent event)
     {
         final Player player = event.getPlayer();
-        Ban ban = BanManager.getBan(player);
+        Ban ban = BanManager.getBan(event.getPlayer().getName(), event.getAddress().getHostAddress());
 
         PlayerData data = PlayerData.getPlayerData(player);
         data.setLastLocation(player.getLocation().clone());
 
-        if (BanManager.isBanned(player) && !ban.isExpired())
+        if (ban != null && !ban.isExpired())
         {
             if (AdminList.isAdmin(player))
             {

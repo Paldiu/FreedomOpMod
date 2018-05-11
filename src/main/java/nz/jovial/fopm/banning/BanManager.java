@@ -38,6 +38,7 @@ public class BanManager
     public BanManager()
     {
         bans = new ArrayList<>();
+        loadBans();
     }
 
     public static void loadBans()
@@ -171,9 +172,43 @@ public class BanManager
     {
         for (Ban ban : bans)
         {
-            if (ban.getName().equals(player.getName()) || ban.getIp().equals(player.getAddress().getHostString()))
+            if (ban.getName() != null)
             {
-                return ban;
+                if (ban.getName().equals(player.getName()))
+                {
+                    return ban;
+                }
+            }
+
+            if (ban.getIp() != null)
+            {
+                if (ban.getIp().equals(player.getAddress().getHostString()))
+                {
+                    return ban;
+                }
+            }
+        }
+        return null;
+    }
+
+    public static Ban getBan(String name, String ip)
+    {
+        for (Ban ban : bans)
+        {
+            if (ban.getName() != null)
+            {
+                if (ban.getName().equals(name))
+                {
+                    return ban;
+                }
+            }
+
+            if (ban.getIp() != null)
+            {
+                if (ban.getIp().equals(ip))
+                {
+                    return ban;
+                }
             }
         }
         return null;

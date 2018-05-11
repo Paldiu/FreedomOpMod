@@ -43,16 +43,19 @@ public class Command_nick
         {
             if (args[0].equalsIgnoreCase("off"))
             {
-                p.setDisplayName(p.getName());
+                p.setDisplayName(Rank.OP.getColor() + p.getName());
+                sender.sendMessage(ChatColor.GRAY + "Yout nick has been removed");
                 return true;
             }
             if (maxCharLimit < args[0].length())
             {
-                p.sendMessage(ChatColor.YELLOW + "ERROR: Your nickname can only be a maximum of 16 characters.");
+                p.sendMessage(ChatColor.RED + "Your nickname can only be a maximum of 16 characters.");
                 return true;
             }
 
             p.setDisplayName(FUtil.colorize(args[0]));
+            sender.sendMessage(ChatColor.GREEN + "Successfully set your nick to " + FUtil.colorize(args[0]));
+            return true;
         }
 
         if (args.length == 2)
@@ -62,23 +65,27 @@ public class Command_nick
                 Player t = Bukkit.getPlayer(args[1]);
                 if (t == null)
                 {
-                    p.sendMessage(ChatColor.YELLOW + "That player is not online!");
+                    p.sendMessage(ChatColor.RED + "That player is not online!");
                     return true;
                 }
 
                 if (args[0].equalsIgnoreCase("off"))
                 {
-                    t.setDisplayName(t.getName());
+                    t.setDisplayName(Rank.OP.getColor() + t.getName());
+                    sender.sendMessage(ChatColor.GRAY + "Successfully removed " + t.getName() + "'s nick");
+                    t.sendMessage(ChatColor.GRAY + "Your nick has been removed by " + sender.getName());
                     return true;
                 }
 
                 if (args[0].length() > maxCharLimit)
                 {
-                    p.sendMessage(ChatColor.YELLOW + "ERROR: That nickname is too long!");
+                    p.sendMessage(ChatColor.RED + "That nickname is too long!");
                     return true;
                 }
 
-                t.setDisplayName(args[0]);
+                t.setDisplayName(FUtil.colorize(args[0]));
+                sender.sendMessage(ChatColor.GRAY + "Successfully changed " + t.getName() + "'s nick!");
+                t.sendMessage(ChatColor.GRAY + "Your nick has been changed by " + sender.getName());
                 return true;
             }
         }
