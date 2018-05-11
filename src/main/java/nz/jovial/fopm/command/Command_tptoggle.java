@@ -15,7 +15,7 @@ public class Command_tptoggle
     {
         PlayerData data = PlayerData.getPlayerData((Player) sender);
         data.setTpToggled(!data.isTpToggled());
-        sender.sendMessage(ChatColor.GREEN + (data.isTpToggled() == true ? "Enabled teleportation" : "Disabled teleportation"));
+        sender.sendMessage(ChatColor.GREEN + (data.isTpToggled() ? "Disabled teleportation" : "Enabled teleportation"));
         return true;
     }
 }

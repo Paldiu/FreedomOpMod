@@ -40,7 +40,7 @@ import java.lang.reflect.Field;
 public class PlayerListener implements Listener
 {
 
-    private FreedomOpMod plugin;
+    private final FreedomOpMod plugin;
     private CommandMap cmap = getCommandMap();
 
     public PlayerListener(FreedomOpMod plugin)
@@ -104,7 +104,14 @@ public class PlayerListener implements Listener
             event.disallow(PlayerLoginEvent.Result.KICK_OTHER, ban.getKickMessage());
         }
     }
-
+    
+    //Added disconnect message
+    @EventHandler
+    public void onPlayerDisconnect(PlayerQuitEvent event) {
+        final Player player = event.getPlayer();
+        event.setQuitMessage(ChatColor.DARK_GRAY + "[" + ChatColor.RED + "-" + ChatColor.DARK_GRAY + "] " + player.getName());
+    }
+    
     @EventHandler
     public void onPlayerChat(AsyncPlayerChatEvent event)
     {
@@ -180,25 +187,21 @@ public class PlayerListener implements Listener
         final Player player = event.getPlayer();
         YamlConfiguration config = plugin.config.getConfig();
 
-        for (String blocked : config.getStringList("commands.default"))
-        {
+        for (String blocked : config.getStringList("commands.default")) {
             if (event.getMessage().equalsIgnoreCase(blocked) || event.getMessage().split(" ")[0].equalsIgnoreCase(blocked))
             {
                 player.sendMessage(ChatColor.RED + "That command is blocked!");
                 event.setCancelled(true);
                 continue;
             }
-
             if (cmap.getCommand(blocked) == null)
             {
                 continue;
             }
-
             if (cmap.getCommand(blocked).getAliases() == null)
             {
                 continue;
             }
-
             cmap.getCommand(blocked).getAliases().stream().filter((blocked2) -> (event.getMessage().equalsIgnoreCase(blocked2) || event.getMessage().split(" ")[0].equalsIgnoreCase(blocked2))).map((_item) ->
             {
                 player.sendMessage(ChatColor.RED + "That command is blocked!");
